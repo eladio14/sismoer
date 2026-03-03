@@ -6,7 +6,8 @@ import SettingsModal from './components/SettingsModal';
 import AlertSystem from './components/AlertSystem';
 import SessionStats from './components/SessionStats';
 import LandingPage from './components/LandingPage';
-import { calculateAngle, evaluateRisk } from './utils/ergonomics';
+import RebaReport from './components/RebaReport';
+import { calculateAngle, evaluateRiskREBA } from './utils/ergonomics';
 // CSS imports removed in favor of Tailwind
 
 function App() {
@@ -16,7 +17,12 @@ function App() {
         neck: 0,
         trunk: 0,
         shoulder_l: 0,
-        shoulder_r: 0
+        shoulder_r: 0,
+        elbow_l: 0, elbow_r: 0,
+        wrist_l: 0, wrist_r: 0,
+        hip_l: 0, hip_r: 0,
+        knee_l: 0, knee_r: 0,
+        ankle_l: 0, ankle_r: 0
     });
 
     // Risk State
@@ -120,21 +126,45 @@ function App() {
             shoulder_level_diff: (p(11).y - p(12).y) * 100 // + means right higher? y increases downwards
         };
 
+        // 4. Extremities (Arms, Wrists, Legs, Knees, Ankles)
+        const elbow_l = calculateAngle(p(11), p(13), p(15));
+        const elbow_r = calculateAngle(p(12), p(14), p(16));
+
+        const wrist_l = calculateAngle(p(13), p(15), p(19));
+        const wrist_r = calculateAngle(p(14), p(16), p(20));
+
+        const hip_l = calculateAngle(p(11), p(23), p(25));
+        const hip_r = calculateAngle(p(12), p(24), p(26));
+
+        const knee_l = calculateAngle(p(23), p(25), p(27));
+        const knee_r = calculateAngle(p(24), p(26), p(28));
+
+        const ankle_l = calculateAngle(p(25), p(27), p(31));
+        const ankle_r = calculateAngle(p(26), p(28), p(32));
+
         // Re-map for compatibility with existing UI props
         // We update the state with "display friendly" values
         setAngles({
             neck: neckAngle,
             trunk: trunkAngle,
             shoulder_l: (p(11).y * 100), // Raw Y for simple visualization of height
-            shoulder_r: (p(12).y * 100)
+            shoulder_r: (p(12).y * 100),
+            elbow_l, elbow_r,
+            wrist_l, wrist_r,
+            hip_l, hip_r,
+            knee_l, knee_r,
+            ankle_l, ankle_r
         });
 
         // Evaluate Risk using the new logic
-        const riskEval = evaluateRisk({
+        const riskEval = evaluateRiskREBA({
             neck: neckAngle,
             trunk: trunkAngle,
             shoulder_l: p(11).y * 100,
-            shoulder_r: p(12).y * 100
+            shoulder_r: p(12).y * 100,
+            elbow_l, elbow_r,
+            wrist_l, wrist_r,
+            knee_l, knee_r
         }, calibration);
 
         setRisk(riskEval);
@@ -175,6 +205,7 @@ function App() {
             />
 
             <AlertSystem risk={risk} settings={settings} sessionTime={sessionTime} />
+            <RebaReport angles={angles} risk={risk} />
         </Dashboard>
     );
 }
