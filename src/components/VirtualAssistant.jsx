@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, MessageCircleWarning, CheckCircle, AlertTriangle, Sparkles, X } from 'lucide-react';
+import { Bot, AlertCircle, CheckCircle, AlertTriangle, Sparkles, X } from 'lucide-react';
 
 const VirtualAssistant = ({ risk, angles, sessionTime }) => {
     const [message, setMessage] = useState('');
@@ -79,7 +79,7 @@ const VirtualAssistant = ({ risk, angles, sessionTime }) => {
     const moodConfig = {
         idle: { icon: Sparkles, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', glow: 'shadow-[0_0_30px_rgba(59,130,246,0.3)]' },
         happy: { icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', glow: 'shadow-[0_0_30px_rgba(16,185,129,0.3)]' },
-        warning: { icon: MessageCircleWarning, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', glow: 'shadow-[0_0_30px_rgba(245,158,11,0.3)]' },
+        warning: { icon: AlertCircle, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', glow: 'shadow-[0_0_30px_rgba(245,158,11,0.3)]' },
         danger: { icon: AlertTriangle, color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/20', glow: 'shadow-[0_0_30px_rgba(244,63,94,0.3)] animate-pulse' }
     };
 
