@@ -5,20 +5,20 @@ const Dashboard = ({ children, onOpenSettings }) => {
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0e14] text-gray-100 font-sans selection:bg-blue-500/30">
       {/* Header */}
-      <header className="flex-none h-16 border-b border-white/5 bg-white/5 backdrop-blur-md flex items-center justify-between px-6 z-10">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/20 rounded-lg">
-            <Shield className="text-blue-400" size={24} />
+      <header className="flex-none min-h-[4rem] py-3 sm:py-0 border-b border-white/5 bg-white/5 backdrop-blur-md flex flex-wrap items-center justify-between px-4 sm:px-6 z-10 gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 bg-blue-500/20 rounded-lg">
+            <Shield className="text-blue-400 w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-white leading-tight">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-white leading-tight">
               SMEP <span className="text-blue-400 font-normal opacity-75">RedUJAP</span>
             </h1>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Monitor Ergonómico de Postura</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400 uppercase tracking-wider font-medium">Monitor Ergonómico de Postura</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
           {/* Settings Button passed from App or context could go here, 
                but strictly following children pattern, we might need to inject it.
                For now, let's just stick to the layout. 
@@ -26,7 +26,7 @@ const Dashboard = ({ children, onOpenSettings }) => {
            */}
           <button
             onClick={onOpenSettings}
-            className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-sm text-gray-300 font-medium"
+            className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-xs sm:text-sm text-gray-300 font-medium"
           >
             Configuración
           </button>
@@ -53,9 +53,9 @@ const Dashboard = ({ children, onOpenSettings }) => {
       </main>
 
       {/* Footer */}
-      <footer className="flex-none h-8 border-t border-white/5 bg-[#0a0e14] flex items-center justify-between px-6 text-[10px] text-gray-500">
-        <p>© 2026 Universidad José Antonio Páez | Ingeniería de Software</p>
-        <div className="flex gap-4 font-mono opacity-50">
+      <footer className="flex-none min-h-[2rem] py-2 border-t border-white/5 bg-[#0a0e14] flex flex-wrap items-center justify-between px-4 sm:px-6 text-[9px] sm:text-[10px] text-gray-500 gap-2">
+        <p className="w-full sm:w-auto text-center sm:text-left">© 2026 Universidad José Antonio Páez | Ingeniería de Software</p>
+        <div className="flex gap-4 font-mono opacity-50 w-full sm:w-auto justify-center sm:justify-end">
           <span>LATENCY: 12ms</span>
           <span>GPU: ACTIVE</span>
         </div>
