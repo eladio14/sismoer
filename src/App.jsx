@@ -7,6 +7,7 @@ import AlertSystem from './components/AlertSystem';
 import SessionStats from './components/SessionStats';
 import LandingPage from './components/LandingPage';
 import RebaReport from './components/RebaReport';
+import VirtualAssistant from './components/VirtualAssistant';
 import { calculateAngle, evaluateRiskREBA } from './utils/ergonomics';
 // CSS imports removed in favor of Tailwind
 
@@ -205,6 +206,7 @@ function App() {
             />
 
             <AlertSystem risk={risk} settings={settings} sessionTime={sessionTime} />
+            <VirtualAssistant risk={risk} angles={angles} sessionTime={sessionTime} />
             <RebaReport angles={angles} risk={risk} />
         </Dashboard>
     );
