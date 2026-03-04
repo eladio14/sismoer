@@ -2,8 +2,8 @@ import React from 'react';
 import { Activity, Shield, Zap, ChevronRight, MonitorPlay, CheckCircle2 } from 'lucide-react';
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
-    <div className="bg-slate-800/40 backdrop-blur-md border border-slate-700/50 p-6 rounded-2xl hover:bg-slate-800/60 transition-all duration-300 group">
-        <div className="bg-emerald-500/10 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+    <div className="bg-slate-800/40 backdrop-blur-md border border-slate-700/50 p-5 sm:p-6 rounded-2xl hover:bg-slate-800/60 transition-all duration-300 group">
+        <div className="bg-emerald-500/10 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
             <Icon className="w-6 h-6 text-emerald-400" />
         </div>
         <h3 className="text-xl font-semibold text-slate-100 mb-2 font-outfit">{title}</h3>
@@ -39,14 +39,14 @@ const LandingPage = ({ onStart }) => {
 
                     <button
                         onClick={onStart}
-                        className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-2xl transition-all duration-300 shadow-[0_0_40px_-10px_rgba(16,185,129,0.5)] hover:shadow-[0_0_60px_-15px_rgba(16,185,129,0.7)] hover:-translate-y-1"
+                        className="group relative inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-xl sm:rounded-2xl transition-all duration-300 shadow-[0_0_40px_-10px_rgba(16,185,129,0.5)] hover:shadow-[0_0_60px_-15px_rgba(16,185,129,0.7)] hover:-translate-y-1"
                     >
                         <MonitorPlay className="w-5 h-5" />
-                        <span className="text-lg">Comenzar Monitoreo</span>
+                        <span className="text-base sm:text-lg">Comenzar Monitoreo</span>
                         <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
 
                         {/* Glow effect on hover */}
-                        <div className="absolute inset-0 rounded-2xl ring-2 ring-emerald-500/50 ring-offset-2 ring-offset-slate-950 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 rounded-xl sm:rounded-2xl ring-2 ring-emerald-500/50 ring-offset-2 ring-offset-slate-950 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
 
                     <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-500">
