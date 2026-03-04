@@ -5,9 +5,9 @@ const SettingsModal = ({ isOpen, onClose, settings, onUpdateSettings, onCalibrat
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div className="w-full max-w-md bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="w-full max-w-md bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
+                <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5 flex-shrink-0">
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                         <AlertTriangle size={18} className="text-yellow-500" />
                         Configuración
@@ -20,7 +20,7 @@ const SettingsModal = ({ isOpen, onClose, settings, onUpdateSettings, onCalibrat
                     </button>
                 </div>
 
-                <div className="p-6 space-y-6">
+                <div className="p-4 sm:p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
                     {/* Audio Settings */}
                     <div className="space-y-3">
                         <label className="text-sm font-medium text-gray-400 uppercase tracking-wider">Alertas</label>
@@ -117,8 +117,8 @@ const SettingsModal = ({ isOpen, onClose, settings, onUpdateSettings, onCalibrat
 
                 </div>
 
-                <div className="p-4 bg-white/5 border-t border-white/10 text-center">
-                    <p className="text-xs text-gray-500">Versión 1.0.0 Pro • RedUJAP</p>
+                <div className="p-3 sm:p-4 bg-white/5 border-t border-white/10 text-center flex-shrink-0">
+                    <p className="text-[10px] sm:text-xs text-gray-500">Versión 1.0.0 Pro • RedUJAP</p>
                 </div>
             </div>
         </div>
