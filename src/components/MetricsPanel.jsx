@@ -9,7 +9,7 @@ const MetricsPanel = ({ angles, risk }) => {
     return (
         <aside className="w-full h-full flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar print:hidden">
             {/* Risk Card */}
-            <div className={`relative p-8 rounded-3xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-700 group hover:bg-slate-900/60 hover:border-white/10`}>
+            <div className={`relative p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-700 group hover:bg-slate-900/60 hover:border-white/10`}>
                 {/* Glow effects */}
                 <div className={`absolute -right-12 -top-12 w-48 h-48 rounded-full ${risk.statusColor || 'bg-slate-500'} opacity-20 blur-[50px] group-hover:opacity-40 transition-opacity duration-700`}></div>
                 <div className={`absolute -left-12 -bottom-12 w-48 h-48 rounded-full ${risk.statusColor || 'bg-slate-500'} opacity-10 blur-[50px] group-hover:opacity-30 transition-opacity duration-700`}></div>
@@ -17,8 +17,8 @@ const MetricsPanel = ({ angles, risk }) => {
                 <div className="relative z-10">
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Nivel de Riesgo REBA</h3>
                     <div className="flex items-baseline gap-2 mb-2">
-                        <span className={`text-7xl font-black tracking-tighter ${risk.color || 'text-slate-400'} drop-shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-colors duration-500`}>{risk.score || 0}</span>
-                        <span className="text-xl text-slate-500 font-light">/ 15</span>
+                        <span className={`text-6xl sm:text-7xl font-black tracking-tighter ${risk.color || 'text-slate-400'} drop-shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-colors duration-500`}>{risk.score || 0}</span>
+                        <span className="text-lg sm:text-xl text-slate-500 font-light">/ 15</span>
                     </div>
                     <div className="mt-4 flex flex-col items-start gap-2">
                         <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold text-white border border-white/10 backdrop-blur-md bg-white/5 shadow-inner`}>
@@ -31,7 +31,7 @@ const MetricsPanel = ({ angles, risk }) => {
             </div>
 
             {/* Bilateral Posture */}
-            <div className="p-6 rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10">
+            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20">
@@ -65,7 +65,7 @@ const MetricsPanel = ({ angles, risk }) => {
             </div>
 
             {/* Axial Segments (Grupo A) */}
-            <div className="p-6 rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10 flex-1">
+            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10 flex-1">
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
@@ -120,7 +120,7 @@ const MetricsPanel = ({ angles, risk }) => {
             </div>
 
             {/* Upper Extremities */}
-            <div className="p-6 rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10 flex-1">
+            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10 flex-1">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
@@ -173,7 +173,7 @@ const MetricsPanel = ({ angles, risk }) => {
             </div>
 
             {/* Lower Extremities */}
-            <div className="p-6 rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10 flex-1">
+            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-xl transition-all duration-500 hover:bg-slate-900/60 hover:border-white/10 flex-1">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-teal-500/10 rounded-xl border border-teal-500/20">
