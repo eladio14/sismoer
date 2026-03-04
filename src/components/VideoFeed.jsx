@@ -120,14 +120,14 @@ const VideoFeed = ({ onResults, riskLevel, privacyMode }) => {
             <div className="relative w-full h-full">
                 <video
                     ref={videoRef}
-                    className={`absolute inset-0 w-full h-full object-contain transform -scale-x-100 transition-all duration-700 ${privacyMode ? 'filter blur-2xl brightness-50' : ''}`}
+                    className={`absolute inset-0 w-full h-full object-cover transform -scale-x-100 transition-all duration-700 ${privacyMode ? 'filter blur-2xl brightness-50' : ''}`}
                     playsInline
                     autoPlay
                     muted
                 />
                 <canvas
                     ref={canvasRef}
-                    className="absolute inset-0 w-full h-full object-contain transform -scale-x-100 z-10" // Removed mix-blend-screen
+                    className="absolute inset-0 w-full h-full object-cover transform -scale-x-100 z-10" // Removed mix-blend-screen
                     width="1280"
                     height="720"
                 />
