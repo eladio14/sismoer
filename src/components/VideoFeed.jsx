@@ -115,7 +115,7 @@ const VideoFeed = ({ onResults, riskLevel, privacyMode }) => {
     }, [results, onResults, skeletonColor]);
 
     return (
-        <div className="relative w-full h-full rounded-3xl overflow-hidden bg-slate-900/60 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] group">
+        <div className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900/60 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] group">
             {/* Video and Canvas Layer */}
             <div className="relative w-full h-full">
                 <video
