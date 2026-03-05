@@ -11,7 +11,7 @@ import VirtualAssistant from './components/VirtualAssistant';
 import { calculateAngle, evaluateRiskREBA } from './utils/ergonomics';
 // CSS imports removed in favor of Tailwind
 
-function App() {
+const App = () => {
     const [isStarted, setIsStarted] = useState(false);
 
     const [angles, setAngles] = useState({
