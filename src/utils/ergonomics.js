@@ -98,6 +98,7 @@ const getScoreB = (upperScore, lowerScore, wristScore) => {
     const l = Math.min(Math.max(lowerScore - 1, 0), 11);
     const w = Math.min(Math.max(wristScore - 1, 0), 11);
 const getScoreB = (u, l, w) => {
+const getScoreB = (u, l, w) => {
     return tableB[u][l][w];
 };
 
