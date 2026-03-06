@@ -150,10 +150,10 @@ function App() {
     }, [isMonitoring, risk.level]);
 
     const handlePoseResults = useCallback((results) => {
-        // Start monitoring once we get first results
-        setIsMonitoring(true);
-
         if (!results.poseLandmarks) return;
+
+        // Start monitoring once we get first valid landmarks
+        setIsMonitoring(true);
 
         const lm = results.poseLandmarks;
 
@@ -165,13 +165,10 @@ function App() {
         // Helper to get point
         const p = (idx) => lm[idx];
 
-        // 1. Neck Angle (Mid Shoulder to Mid Ear) vs Vertical/Spine
+        // 1. Neck Angle (Mid Shoulder to Mid Ear) vs vertical
         const midShoulder = { x: (p(11).x + p(12).x) / 2, y: (p(11).y + p(12).y) / 2 };
         const midEar = { x: (p(7).x + p(8).x) / 2, y: (p(7).y + p(8).y) / 2 };
 
-        // Relative to vertical (assuming camera is level)
-        // Or relative to trunk for more biomechanical accuracy. 
-        // Using vertical for simplicity in this version.
         const vertRef = { x: midShoulder.x, y: midShoulder.y - 0.5 }; // Upwards
         const neckAngle = calculateAngle(midEar, midShoulder, vertRef);
 
@@ -181,22 +178,10 @@ function App() {
         // Note: calculateAngle geometry depends on order. 
         // If standing straight, midShoulder is directly above midHip.
 
-        // 3. Shoulder Symmetry (Tilting)
-        // Angle of line 11-12 vs Horizontal
-        const shoulderSlope = Math.abs(p(11).y - p(12).y) * 100; // Rough approximation of slope/tilt
-        // Or calculate angle:
-        const shoulderAngleL = calculateAngle(p(11), midShoulder, { x: midShoulder.x - 0.5, y: midShoulder.y });
-        // Let's stick to the previous simple logic but normalized
-
-        // New proper angles object
-        const newAngles = {
-            neck: neckAngle,
-            trunk: trunkAngle,
-            shoulder_l: shoulderAngleL, // Keeping raw for debug if needed
-            shoulder_r: 0,
-            // Refined symmetry for UI
-            shoulder_level_diff: (p(11).y - p(12).y) * 100 // + means right higher? y increases downwards
-        };
+        // 3. Shoulder and arm metrics
+        const shoulder_l = calculateAngle(p(23), p(11), p(13));
+        const shoulder_r = calculateAngle(p(24), p(12), p(14));
+        const shoulder_tilt = Math.abs((Math.atan2(p(12).y - p(11).y, p(12).x - p(11).x) * 180) / Math.PI);
 
         // 4. Extremities (Arms, Wrists, Legs, Knees, Ankles)
         const elbow_l = calculateAngle(p(11), p(13), p(15));
@@ -214,34 +199,73 @@ function App() {
         const ankle_l = calculateAngle(p(25), p(27), p(31));
         const ankle_r = calculateAngle(p(26), p(28), p(32));
 
-        // Re-map for compatibility with existing UI props
-        // We update the state with "display friendly" values
-        setAngles({
+        const rawAngles = {
             neck: neckAngle,
             trunk: trunkAngle,
-            shoulder_l: (p(11).y * 100), // Raw Y for simple visualization of height
-            shoulder_r: (p(12).y * 100),
+            shoulder_l,
+            shoulder_r,
+            shoulder_height_l: p(11).y * 100,
+            shoulder_height_r: p(12).y * 100,
+            shoulder_tilt,
             elbow_l, elbow_r,
             wrist_l, wrist_r,
             hip_l, hip_r,
             knee_l, knee_r,
             ankle_l, ankle_r
-        });
+        };
+
+        const previous = smoothedAnglesRef.current;
+        const smoothedAngles = previous
+            ? Object.keys(rawAngles).reduce((acc, key) => {
+                acc[key] = previous[key] + (rawAngles[key] - previous[key]) * SMOOTHING_ALPHA;
+                return acc;
+            }, {})
+            : rawAngles;
+
+        smoothedAnglesRef.current = smoothedAngles;
+        setAngles(smoothedAngles);
 
         // Evaluate Risk using the new logic
-        const riskEval = evaluateRiskREBA({
-            neck: neckAngle,
-            trunk: trunkAngle,
-            shoulder_l: p(11).y * 100,
-            shoulder_r: p(12).y * 100,
-            elbow_l, elbow_r,
-            wrist_l, wrist_r,
-            knee_l, knee_r
-        }, calibration);
+        const riskEval = evaluateRiskREBA(smoothedAngles, calibration, { deadzone: settings.deadzone || 0 });
 
         setRisk(riskEval);
 
-    }, [calibration]);
+        const shoulderDiff = Math.abs((smoothedAngles.shoulder_height_l || 0) - (smoothedAngles.shoulder_height_r || 0));
+        const elbowDeviation = Math.max(
+            Math.abs(90 - (smoothedAngles.elbow_l || 90)),
+            Math.abs(90 - (smoothedAngles.elbow_r || 90))
+        );
+        const wristDeviation = Math.max(
+            Math.abs(180 - (smoothedAngles.wrist_l || 180)),
+            Math.abs(180 - (smoothedAngles.wrist_r || 180))
+        );
+
+        const statusByThreshold = (value, low, medium) => {
+            if (value <= low) return 'ok';
+            if (value <= medium) return 'warn';
+            return 'risk';
+        };
+
+        setSegmentStatus({
+            cervical: { status: statusByThreshold(riskEval.subScores.adjustedNeck || 0, 10, 20), value: riskEval.subScores.adjustedNeck || 0 },
+            tronco: { status: statusByThreshold(riskEval.subScores.adjustedTrunk || 0, 10, 20), value: riskEval.subScores.adjustedTrunk || 0 },
+            hombros: { status: statusByThreshold(shoulderDiff, 2, 4), value: shoulderDiff },
+            codos: { status: statusByThreshold(elbowDeviation, 20, 35), value: elbowDeviation },
+            munecas: { status: statusByThreshold(wristDeviation, 15, 30), value: wristDeviation }
+        });
+
+    }, [calibration, settings.deadzone]);
+
+    useEffect(() => {
+        if (!isMonitoring || risk.score <= 0) return;
+        if (sessionTime === 0 || sessionTime % 10 !== 0 || lastSampleRef.current === sessionTime) return;
+
+        lastSampleRef.current = sessionTime;
+        setRiskHistory(prev => {
+            const next = [...prev, { second: sessionTime, score: risk.score, level: risk.level }];
+            return next.slice(-36); // Last 6 minutes sampled every 10s
+        });
+    }, [isMonitoring, risk.score, risk.level, sessionTime]);
 
     if (!isStarted) {
         return <LandingPage onStart={() => setIsStarted(true)} />;
