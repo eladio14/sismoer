@@ -2,10 +2,41 @@ import React, { useRef, useEffect } from 'react';
 import { usePoseDetector } from '../hooks/usePoseDetector';
 import { Camera, RefreshCw, AlertCircle } from 'lucide-react';
 
-const VideoFeed = ({ onResults, riskLevel, privacyMode }) => {
+const VideoFeed = ({ onResults, onSnapshot, snapshotRequestId, riskLevel, privacyMode }) => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
+    const lastSnapshotAt = useRef(0);
     const { results, isLoaded, error } = usePoseDetector(videoRef, canvasRef);
+
+    const captureSnapshot = () => {
+        if (!onSnapshot || !videoRef.current || videoRef.current.readyState < 2) return;
+
+        const snapshotCanvas = document.createElement('canvas');
+        const vw = videoRef.current.videoWidth || 1280;
+        const vh = videoRef.current.videoHeight || 720;
+        snapshotCanvas.width = vw;
+        snapshotCanvas.height = vh;
+        const sctx = snapshotCanvas.getContext('2d');
+        if (!sctx) return;
+
+        // Compose final snapshot as seen by user: video + skeleton overlay, mirrored.
+        sctx.translate(vw, 0);
+        sctx.scale(-1, 1);
+        sctx.drawImage(videoRef.current, 0, 0, vw, vh);
+        if (canvasRef.current) {
+            sctx.drawImage(canvasRef.current, 0, 0, vw, vh);
+        }
+        onSnapshot(snapshotCanvas.toDataURL('image/jpeg', 0.85));
+    };
+
+    useEffect(() => {
+        if (!snapshotRequestId) return;
+        try {
+            captureSnapshot();
+        } catch (e) {
+            console.error('No se pudo generar snapshot bajo demanda', e);
+        }
+    }, [snapshotRequestId]);
 
     // Dynamic skeleton color based on risk
     const skeletonColor = riskLevel === 'Alto' ? '#ef4444' : riskLevel === 'Medio' ? '#f59e0b' : '#10b981';
@@ -108,11 +139,23 @@ const VideoFeed = ({ onResults, riskLevel, privacyMode }) => {
                     27, 28 // ankles
                 ];
                 pointsToDraw.forEach(idx => drawPoint(lm[idx]));
+
+                if (onSnapshot && videoRef.current && videoRef.current.readyState >= 2) {
+                    const now = Date.now();
+                    if (now - lastSnapshotAt.current > 1500) {
+                        try {
+                            captureSnapshot();
+                            lastSnapshotAt.current = now;
+                        } catch (e) {
+                            console.error('No se pudo generar snapshot para el reporte', e);
+                        }
+                    }
+                }
             }
 
             ctx.restore();
         }
-    }, [results, onResults, skeletonColor]);
+    }, [results, onResults, onSnapshot, skeletonColor]);
 
     return (
         <div className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900/60 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] group">

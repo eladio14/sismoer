@@ -283,12 +283,24 @@ function App() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-auto lg:h-[600px] xl:h-[calc(100vh-14rem)] pb-4 lg:pb-0">
                 {/* Video Feed Area - Takes up 2 columns on large screens */}
                 <div className="lg:col-span-2 w-full aspect-[4/3] sm:aspect-video lg:aspect-auto min-h-[300px] lg:min-h-0 lg:h-full">
-                    <VideoFeed onResults={handlePoseResults} riskLevel={risk.level} privacyMode={settings.privacyMode} />
+                    <VideoFeed
+                        onResults={handlePoseResults}
+                        onSnapshot={setReportImage}
+                        snapshotRequestId={snapshotRequestId}
+                        riskLevel={risk.level}
+                        privacyMode={settings.privacyMode}
+                    />
                 </div>
 
                 {/* Metrics Panel - Takes up 1 column */}
                 <div className="lg:col-span-1 h-auto lg:h-full">
-                    <MetricsPanel angles={angles} risk={risk} />
+                    <MetricsPanel
+                        angles={angles}
+                        risk={risk}
+                        riskHistory={riskHistory}
+                        segmentStatus={segmentStatus}
+                        onPrint={handlePrintReport}
+                    />
                 </div>
             </div>
 
