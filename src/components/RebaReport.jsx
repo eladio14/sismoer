@@ -1,6 +1,7 @@
 import React from 'react';
+import { getProfileRecommendations } from '../utils/ergonomics';
 
-const RebaReport = ({ angles, risk }) => {
+const RebaReport = ({ angles, risk, settings, riskHistory = [], segmentStatus = {}, reportImage }) => {
     const d = new Date();
     const dateStr = d.toLocaleDateString('es-ES') + ' ' + d.toLocaleTimeString('es-ES');
 
@@ -8,9 +9,17 @@ const RebaReport = ({ angles, risk }) => {
     if (!risk?.subScores) return null;
 
     const { subScores } = risk;
+    const profileName = settings?.workProfile || 'oficina';
+    const profileRecommendations = getProfileRecommendations(profileName);
+    const avgScore = riskHistory.length > 0
+        ? (riskHistory.reduce((acc, item) => acc + item.score, 0) / riskHistory.length).toFixed(1)
+        : risk.score;
+    const maxScore = riskHistory.length > 0
+        ? Math.max(...riskHistory.map(item => item.score))
+        : risk.score;
 
     return (
-        <div className="hidden print:block w-full text-black bg-white p-8 font-sans h-screen">
+        <div className="print-report hidden print:block w-full text-black bg-white p-6 font-sans h-auto">
             <div className="border-b-2 border-slate-800 pb-4 mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-bold uppercase tracking-wider mb-1 text-slate-900">Reporte de Evaluación Ergonómica</h1>
@@ -20,6 +29,21 @@ const RebaReport = ({ angles, risk }) => {
                     <p><strong>Fecha y Hora:</strong> {dateStr}</p>
                     <p><strong>Analista:</strong> Sistema SMEP</p>
                 </div>
+            </div>
+
+            <div className="border border-slate-300 rounded-lg p-4 mb-6">
+                <h4 className="text-base font-bold bg-slate-100 -mx-4 -mt-4 p-2 mb-4 rounded-t-lg border-b border-slate-300 text-center">Evidencia Visual de Postura</h4>
+                {reportImage ? (
+                    <img
+                        src={reportImage}
+                        alt="Captura de postura"
+                        className="w-full max-h-[220px] object-contain border border-slate-200 rounded"
+                    />
+                ) : (
+                    <div className="w-full h-36 border border-dashed border-slate-300 rounded flex items-center justify-center text-sm text-slate-500">
+                        Sin imagen disponible. Inicia monitoreo unos segundos antes de imprimir.
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-2 gap-8 mb-8">
@@ -111,6 +135,36 @@ const RebaReport = ({ angles, risk }) => {
                 </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="border border-slate-300 rounded-lg p-4">
+                    <h4 className="text-base font-bold bg-slate-100 -mx-4 -mt-4 p-2 mb-4 rounded-t-lg border-b border-slate-300 text-center">Indicadores de Tendencia</h4>
+                    <p className="text-sm mb-2"><strong>Perfil ergonómico:</strong> {profileName}</p>
+                    <p className="text-sm mb-2"><strong>Promedio sesión:</strong> REBA {avgScore}</p>
+                    <p className="text-sm"><strong>Pico detectado:</strong> REBA {maxScore}</p>
+                </div>
+
+                <div className="border border-slate-300 rounded-lg p-4">
+                    <h4 className="text-base font-bold bg-slate-100 -mx-4 -mt-4 p-2 mb-4 rounded-t-lg border-b border-slate-300 text-center">Semáforo Segmentario</h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                        {Object.entries(segmentStatus).map(([key, value]) => (
+                            <p key={key}><strong>{key}:</strong> {value?.status || 'ok'} ({Math.round(value?.value || 0)})</p>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="border border-slate-200 rounded p-4 mb-8">
+                <h4 className="font-bold text-slate-700 border-b border-slate-200 pb-2 mb-3">Recomendaciones Personalizadas</h4>
+                <ul className="text-sm text-slate-700 list-disc pl-5 space-y-1.5">
+                    {(risk.recommendations || []).slice(0, 4).map((rec, idx) => (
+                        <li key={`risk-${idx}`}>{rec}</li>
+                    ))}
+                    {profileRecommendations.map((rec, idx) => (
+                        <li key={`profile-${idx}`}>{rec}</li>
+                    ))}
+                </ul>
+            </div>
+
             {/* Mediciones Crudas */}
             <div className="border border-slate-200 rounded p-4">
                 <h4 className="font-bold text-slate-700 border-b border-slate-200 pb-2 mb-3">Detalle de Ángulos (Mediciones Biométrica)</h4>
@@ -118,10 +172,10 @@ const RebaReport = ({ angles, risk }) => {
                     <p><strong>Tronco:</strong> {Math.round(angles.trunk)}°</p>
                     <p><strong>Cuello:</strong> {Math.round(angles.neck)}°</p>
                     <div></div>
-                    <p><strong>Brazo Izq:</strong> {Math.round(angles.shoulder_l || 0)}</p>
+                    <p><strong>Elevación Brazo Izq:</strong> {Math.round(angles.shoulder_l || 0)}°</p>
                     <p><strong>Codo Izq:</strong> {Math.round(angles.elbow_l)}°</p>
                     <p><strong>Muñeca Izq:</strong> {Math.round(angles.wrist_l)}°</p>
-                    <p><strong>Brazo Der:</strong> {Math.round(angles.shoulder_r || 0)}</p>
+                    <p><strong>Elevación Brazo Der:</strong> {Math.round(angles.shoulder_r || 0)}°</p>
                     <p><strong>Codo Der:</strong> {Math.round(angles.elbow_r)}°</p>
                     <p><strong>Muñeca Der:</strong> {Math.round(angles.wrist_r)}°</p>
                 </div>

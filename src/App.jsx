@@ -314,7 +314,14 @@ function App() {
 
             <AlertSystem risk={risk} settings={settings} sessionTime={sessionTime} />
             <VirtualAssistant risk={risk} angles={angles} sessionTime={sessionTime} />
-            <RebaReport angles={angles} risk={risk} />
+            <RebaReport
+                angles={angles}
+                risk={risk}
+                settings={settings}
+                riskHistory={riskHistory}
+                segmentStatus={segmentStatus}
+                reportImage={reportImage}
+            />
         </Dashboard>
     );
 }
