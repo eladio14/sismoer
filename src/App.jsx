@@ -11,6 +11,16 @@ import VirtualAssistant from './components/VirtualAssistant';
 import { calculateAngle, evaluateRiskREBA } from './utils/ergonomics';
 // CSS imports removed in favor of Tailwind
 
+const DEFAULT_SETTINGS = {
+    audioEnabled: false,
+    privacyMode: false,
+    breakInterval: 30,
+    deadzone: 5,
+    workProfile: 'oficina'
+};
+
+const SMOOTHING_ALPHA = 0.35;
+
 function App() {
     const [isStarted, setIsStarted] = useState(false);
 
@@ -19,6 +29,9 @@ function App() {
         trunk: 0,
         shoulder_l: 0,
         shoulder_r: 0,
+        shoulder_height_l: 0,
+        shoulder_height_r: 0,
+        shoulder_tilt: 0,
         elbow_l: 0, elbow_r: 0,
         wrist_l: 0, wrist_r: 0,
         hip_l: 0, hip_r: 0,
