@@ -7,6 +7,7 @@ import { Toaster, toast } from 'sonner';
 const AlertSystem = ({ risk, settings, sessionTime }) => {
     const audioRef = useRef(null);
     const lastAlertTime = useRef(0);
+    const lastBreakMark = useRef(0);
 
     useEffect(() => {
         // Create audio element once
@@ -15,14 +16,14 @@ const AlertSystem = ({ risk, settings, sessionTime }) => {
     }, []);
 
     useEffect(() => {
-        if (!risk || !settings.audioEnabled || risk.score < 6) return;
+        if (!risk || risk.score < 6) return;
 
         const now = Date.now();
-        // Prevent spamming alerts (max once every 3 seconds)
-        if (now - lastAlertTime.current > 3000) {
+        const minGap = risk.score >= 9 ? 12000 : 20000;
+        if (now - lastAlertTime.current > minGap) {
 
             // Play sound
-            if (audioRef.current) {
+            if (settings.audioEnabled && audioRef.current) {
                 audioRef.current.currentTime = 0;
                 audioRef.current.play().catch(e => console.error("Audio playback failed", e));
             }
@@ -30,7 +31,7 @@ const AlertSystem = ({ risk, settings, sessionTime }) => {
             // Show Toast
             const mainIssue = risk.issues?.length > 0 ? risk.issues[0] : 'Por favor, ajusta tu posición.';
             if (risk.score >= 8) {
-                toast.error(`¡Postura Crítica! ${mainIssue}`, {
+                toast.error(`Riesgo alto detectado: ${mainIssue}`, {
                     duration: 4000,
                 });
             } else {
@@ -41,7 +42,7 @@ const AlertSystem = ({ risk, settings, sessionTime }) => {
 
             lastAlertTime.current = now;
         }
-    }, [risk, settings]);
+    }, [risk, settings.audioEnabled]);
 
     // Active break timer (Pomodoro-style)
     useEffect(() => {
@@ -49,8 +50,9 @@ const AlertSystem = ({ risk, settings, sessionTime }) => {
 
         // Convert breakInterval (minutes) to seconds
         const breakIntervalSeconds = settings.breakInterval * 60;
+        const currentMark = Math.floor(sessionTime / breakIntervalSeconds);
 
-        if (sessionTime % breakIntervalSeconds === 0) {
+        if (breakIntervalSeconds > 0 && currentMark > 0 && currentMark !== lastBreakMark.current) {
             toast.info('⏱️ ¡Pausa Activa! Es momento de levantarte, estirar las piernas y descansar la vista.', {
                 duration: 8000,
                 position: 'top-center',
@@ -65,6 +67,7 @@ const AlertSystem = ({ risk, settings, sessionTime }) => {
                 audioRef.current.currentTime = 0;
                 audioRef.current.play().catch(e => console.error("Audio playback failed", e));
             }
+            lastBreakMark.current = currentMark;
         }
     }, [sessionTime, settings.breakInterval, settings.audioEnabled]);
 
