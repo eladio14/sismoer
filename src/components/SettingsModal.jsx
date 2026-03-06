@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Volume2, VolumeX, Crosshair, AlertTriangle, EyeOff, Eye, Timer } from 'lucide-react';
+import { X, Volume2, VolumeX, Crosshair, AlertTriangle, EyeOff, Eye, Timer, Briefcase } from 'lucide-react';
 
 const SettingsModal = ({ isOpen, onClose, settings, onUpdateSettings, onCalibrate }) => {
     if (!isOpen) return null;
@@ -95,6 +95,29 @@ const SettingsModal = ({ isOpen, onClose, settings, onUpdateSettings, onCalibrat
                                 <Crosshair size={18} />
                                 Calibrar Postura Actual
                             </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3">
+                        <label className="text-sm font-medium text-gray-400 uppercase tracking-wider">Perfil de Trabajo</label>
+                        <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5">
+                            <div className="flex items-center gap-3">
+                                <Briefcase className="text-cyan-400" />
+                                <div>
+                                    <p className="text-white font-medium">Escenario ergonómico</p>
+                                    <p className="text-xs text-gray-400">Personaliza recomendaciones en reporte y asistente</p>
+                                </div>
+                            </div>
+                            <select
+                                value={settings.workProfile || 'oficina'}
+                                onChange={(e) => onUpdateSettings({ ...settings, workProfile: e.target.value })}
+                                className="bg-gray-800 text-white text-sm rounded-lg border border-gray-600 focus:ring-cyan-500 focus:border-cyan-500 block p-1.5 outline-none"
+                            >
+                                <option value="oficina">Oficina</option>
+                                <option value="desarrollo">Desarrollo</option>
+                                <option value="diseno">Diseño</option>
+                                <option value="callcenter">Call Center</option>
+                            </select>
                         </div>
                     </div>
 
