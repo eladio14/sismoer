@@ -176,12 +176,35 @@ export const evaluateRiskREBA = (angles, calibration = {}, options = {}) => {
         action = 'Es necesaria acción inmediata';
     }
 
+    const issues = [];
+    const recommendations = [];
+
+    if (adjustedNeck > 20) {
+        issues.push('Flexión cervical elevada');
+        recommendations.push('Sube la pantalla a la altura de los ojos y acerca el teclado.');
+    }
+    if (adjustedTrunk > 20) {
+        issues.push('Inclinación de tronco por encima de zona segura');
+        recommendations.push('Apoya la espalda en el respaldo y acerca la silla al escritorio.');
+    }
+    const shoulderDiff = Math.abs((angles.shoulder_height_l || 0) - (angles.shoulder_height_r || 0));
+    if (shoulderDiff > 4) {
+        issues.push('Asimetría de hombros');
+        recommendations.push('Centra el monitor y distribuye el apoyo de ambos antebrazos.');
+    }
+    if (Math.abs(180 - (angles.elbow_l || 180)) > 80 || Math.abs(180 - (angles.elbow_r || 180)) > 80) {
+        issues.push('Ángulo de codo fuera de rango confortable');
+        recommendations.push('Ajusta altura de silla para mantener codos cercanos a 90°.');
+    }
+
     return {
         score: finalREBAScore, // 1-15
         level,
         color,
         statusColor,
         action,
+        issues,
+        recommendations,
         subScores: {
             trunk: trunkScore,
             neck: neckScore,
@@ -192,9 +215,40 @@ export const evaluateRiskREBA = (angles, calibration = {}, options = {}) => {
             wrist: wristScore,
             scoreB: finalScoreB,
             scoreC: scoreC,
-            activity: activityScore
+            activity: activityScore,
+            adjustedTrunk,
+            adjustedNeck
         }
     };
+};
+
+export const getProfileRecommendations = (profile = 'oficina') => {
+    const common = [
+        'Aplicar pausa activa de 2 a 3 minutos cada 30-45 minutos.',
+        'Mantener pies apoyados y cadera cerca de 90-100° de flexión.',
+        'Evitar posiciones estáticas prolongadas: alternar postura sentado/de pie cuando sea posible.'
+    ];
+
+    const byProfile = {
+        oficina: [
+            'Alinear borde superior del monitor a la altura de los ojos.',
+            'Mantener teclado y mouse a la misma altura para reducir asimetrías de hombro.'
+        ],
+        callcenter: [
+            'Usar diadema bilateral en lugar de sostener teléfono con cuello/hombro.',
+            'Ajustar sensibilidad del micrófono para evitar protracción cervical.'
+        ],
+        diseno: [
+            'Usar atajos de teclado/tableta para disminuir repetición de muñeca dominante.',
+            'Acercar pantalla secundaria al eje visual principal para reducir rotación cervical.'
+        ],
+        desarrollo: [
+            'Dividir pantalla con tipografía legible para evitar adelantar la cabeza.',
+            'Programar microdescansos visuales con regla 20-20-20.'
+        ]
+    };
+
+    return [...common, ...(byProfile[profile] || byProfile.oficina)];
 };
 
 // Keep old angle calc generic
