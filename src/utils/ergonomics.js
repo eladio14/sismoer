@@ -1,29 +1,32 @@
 /**
- * REBA Assessment Scoring Logic
+ * REBA Assessment Scoring Logic (adapted for office posture monitoring)
  */
+
+const compensatedAngle = (raw = 0, baseline = 0, deadzone = 0) => {
+    const delta = Math.abs(raw - baseline);
+    return Math.max(0, delta - deadzone);
+};
 
 // Step 1: Neck Score (1-3)
 const getNeckScore = (angle) => {
-    if (angle >= 0 && angle <= 20) return 1;
-    return 2;
-    // Add +1 if twisting or side-bending (simplified here)
+    if (angle <= 10) return 1;
+    if (angle <= 20) return 2;
+    return 3;
 };
 
 // Step 2: Trunk Score (1-5)
 const getTrunkScore = (angle) => {
-    if (angle >= 0 && angle <= 5) return 1; // upright
-    if (angle > 5 && angle <= 20) return 2;
-    if (angle > 20 && angle <= 60) return 3;
-    return 4; // > 60
-    // Add +1 if twisting or side-bending 
+    if (angle <= 5) return 1;
+    if (angle <= 20) return 2;
+    if (angle <= 60) return 3;
+    return 4;
 };
 
 // Step 3: Legs Score (1-2)
 const getLegScore = (kneeAngle) => {
-    // Simplified: assuming bilateral support for standing desk.
-    // If knees are bent (30-60 deg) we add +1 or +2.
-    // Using 1 for basic standing posture.
-    return 1;
+    // MediaPipe gives ~180° for fully extended knee.
+    const bend = Math.abs(180 - (kneeAngle || 180));
+    return bend > 30 ? 2 : 1;
 };
 
 // REBA Table A (Trunk, Neck, Legs)
@@ -50,27 +53,25 @@ const getScoreA = (trunk, neck, legs) => {
 
 // Step 4: Upper Arm Score (1-6)
 const getUpperArmScore = (angle) => {
-    if (angle >= -20 && angle <= 20) return 1;
-    if (angle > 20 && angle <= 45) return 2;
-    // extension > 20 is also 2
-    if (angle < -20) return 2;
-    if (angle > 45 && angle <= 90) return 3;
-    return 4; // > 90
-    // +1 if abducted or rotated
-    // -1 if supported/leaning
+    const abs = Math.abs(angle || 0);
+    if (abs <= 20) return 1;
+    if (abs <= 45) return 2;
+    if (abs <= 90) return 3;
+    return 4;
 };
 
 // Step 5: Lower Arm Score (1-2)
 const getLowerArmScore = (angle) => {
     if (angle >= 60 && angle <= 100) return 1;
-    return 2; // < 60 or > 100
+    return 2;
 };
 
 // Step 6: Wrist Score (1-3)
 const getWristScore = (angle) => {
-    if (angle >= 0 && angle <= 15) return 1;
-    return 2; // > 15 flex/ext
-    // +1 if twisted
+    // MediaPipe wrist angle tends to be closer to 180° when neutral.
+    const deviation = Math.abs(180 - (angle || 180));
+    if (deviation <= 15) return 1;
+    return 2;
 };
 
 // REBA Table B (Upper Arm, Lower Arm, Wrist)
@@ -118,19 +119,20 @@ const getScoreC = (scoreA, scoreB) => {
     return tableC[a][b];
 };
 
-export const evaluateRiskREBA = (angles) => {
+export const evaluateRiskREBA = (angles, calibration = {}, options = {}) => {
+    const deadzone = options.deadzone ?? 0;
+
+    const adjustedNeck = compensatedAngle(angles.neck, calibration.neck || 0, deadzone);
+    const adjustedTrunk = compensatedAngle(angles.trunk, calibration.trunk || 0, deadzone);
+
     // Get individual scores (using worst side for limbs)
-    const trunkScore = getTrunkScore(angles.trunk);
-    const neckScore = getNeckScore(angles.neck);
-    const legsScore = getLegScore(Math.max(angles.knee_l, angles.knee_r));
+    const trunkScore = getTrunkScore(adjustedTrunk);
+    const neckScore = getNeckScore(adjustedNeck);
+    const legsScore = getLegScore(Math.max(angles.knee_l || 180, angles.knee_r || 180));
 
-    const upperArmAng = Math.max(Math.abs(angles.shoulder_l || 0), Math.abs(angles.shoulder_r || 0)); // Approx using raw Y height difference as angle proxy
-    const lowerArmAng = Math.max(angles.elbow_l, angles.elbow_r);
-    const wristAng = Math.max(angles.wrist_l, angles.wrist_r);
-
-    const upperScore = Math.max(getUpperArmScore(angles.shoulder_l_angle || upperArmAng), getUpperArmScore(angles.shoulder_r_angle || upperArmAng));
-    const lowerScore = Math.max(getLowerArmScore(angles.elbow_l), getLowerArmScore(angles.elbow_r));
-    const wristScore = Math.max(getWristScore(angles.wrist_l), getWristScore(angles.wrist_r));
+    const upperScore = Math.max(getUpperArmScore(angles.shoulder_l), getUpperArmScore(angles.shoulder_r));
+    const lowerScore = Math.max(getLowerArmScore(angles.elbow_l || 0), getLowerArmScore(angles.elbow_r || 0));
+    const wristScore = Math.max(getWristScore(angles.wrist_l || 180), getWristScore(angles.wrist_r || 180));
 
     // Base Scores
     const scoreA = getScoreA(trunkScore, neckScore, legsScore);
@@ -142,7 +144,7 @@ export const evaluateRiskREBA = (angles) => {
     const finalScoreB = scoreB + couplingScore;
 
     const scoreC = getScoreC(finalScoreA, finalScoreB);
-    const activityScore = 1; // Assuming 1 or more body parts are static > 1 min
+    const activityScore = 1; // static office activity baseline
 
     const finalREBAScore = scoreC + activityScore;
 
