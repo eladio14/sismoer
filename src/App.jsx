@@ -52,19 +52,77 @@ function App() {
     const [goodPostureTime, setGoodPostureTime] = useState(0);
     const [badPostureTime, setBadPostureTime] = useState(0);
     const [isMonitoring, setIsMonitoring] = useState(false);
+    const [riskHistory, setRiskHistory] = useState([]);
+    const [reportImage, setReportImage] = useState('');
+    const [snapshotRequestId, setSnapshotRequestId] = useState(0);
+    const [isPrintPending, setIsPrintPending] = useState(false);
+    const [segmentStatus, setSegmentStatus] = useState({
+        cervical: { status: 'ok', value: 0 },
+        tronco: { status: 'ok', value: 0 },
+        hombros: { status: 'ok', value: 0 },
+        codos: { status: 'ok', value: 0 },
+        munecas: { status: 'ok', value: 0 }
+    });
 
     // Settings & Calibration State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [settings, setSettings] = useState({
-        audioEnabled: false,
-        privacyMode: false,
-        breakInterval: 30, // in minutes
-        deadzone: 5 // Sensitivity
-    });
+    const [settings, setSettings] = useState(DEFAULT_SETTINGS);
     const [calibration, setCalibration] = useState({
         trunk: 0,
         neck: 0
     });
+
+    const smoothedAnglesRef = useRef(null);
+    const lastSampleRef = useRef(0);
+
+    const handlePrintReport = useCallback(() => {
+        // Force a fresh snapshot right before printing.
+        setIsPrintPending(true);
+        setSnapshotRequestId(prev => prev + 1);
+
+        // Fallback in case snapshot does not refresh in time.
+        setTimeout(() => {
+            setIsPrintPending(prev => {
+                if (prev) {
+                    window.print();
+                    return false;
+                }
+                return prev;
+            });
+        }, 1200);
+    }, []);
+
+    useEffect(() => {
+        if (!isPrintPending) return;
+        if (!reportImage) return;
+
+        const timer = setTimeout(() => {
+            window.print();
+            setIsPrintPending(false);
+        }, 220);
+
+        return () => clearTimeout(timer);
+    }, [isPrintPending, reportImage]);
+
+    useEffect(() => {
+        try {
+            const persisted = localStorage.getItem('smep.settings');
+            if (persisted) {
+                const parsed = JSON.parse(persisted);
+                setSettings(prev => ({ ...prev, ...parsed }));
+            }
+        } catch (e) {
+            console.error('No se pudieron cargar los ajustes guardados', e);
+        }
+    }, []);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('smep.settings', JSON.stringify(settings));
+        } catch (e) {
+            console.error('No se pudieron guardar los ajustes', e);
+        }
+    }, [settings]);
 
     const handleCalibrate = useCallback(() => {
         // Use current angles as the new "zero"
