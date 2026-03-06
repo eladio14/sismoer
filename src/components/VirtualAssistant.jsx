@@ -7,50 +7,31 @@ const VirtualAssistant = ({ risk, angles, sessionTime }) => {
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
-        // Core Logic for Assistant Feedback
-
         if (!risk) return;
 
         let newMessage = '';
         let newMood = 'happy';
 
-        // 1. Time-based initial greeting
+        const topRecommendation = risk.recommendations?.[0];
+
         if (sessionTime < 5) {
-            newMessage = '¡Hola! Soy tu asistente ergonómico. Mantén una buena postura y yo me encargaré de avisarte si necesitas ajustarla.';
+            newMessage = 'Bienvenido. Mantén espalda apoyada, codos cerca de 90° y mirada al frente para iniciar en zona segura.';
             newMood = 'idle';
-        } else if (risk.score < 3) {
-            // Excellent Posture
+        } else if (risk.score <= 3) {
             const responses = [
-                '¡Excelente postura! Mantenerte así previene la fatiga crónica.',
-                'Tu columna te lo agradecerá. Sigue así.',
-                'Perfecto. Alineación óptima de la espalda y el cuello.'
+                'Excelente alineación. Mantén esta postura para reducir fatiga acumulada.',
+                'Buen control postural. Continúa con micro-pausas cada 30-45 minutos.',
+                'Postura estable. Evita adelantar cabeza y hombros para sostener este nivel.'
             ];
-            newMessage = responses[Math.floor(Math.random() * responses.length)];
+            const index = Math.floor(sessionTime / 10) % responses.length;
+            newMessage = responses[index];
             newMood = 'happy';
         } else if (risk.score >= 3 && risk.score <= 7) {
-            // Warning Posture - Analyzing specific bad angles
             newMood = 'warning';
-
-            if (angles.neck > 20) {
-                newMessage = 'Predicción: Si sigues inclinando el cuello así, es muy probable que desarrolles dolor cervical o tensión hoy mismo. ¡Levanta la barbilla!';
-            } else if (angles.trunk > 20) {
-                newMessage = 'Estás encorvando la espalda. Si mantienes esta postura, la zona lumbar sufrirá sobrecarga. Siéntate más atrás en la silla.';
-            } else if (Math.abs(angles.shoulder_l - angles.shoulder_r) > 10) {
-                newMessage = 'Tienes un hombro más alto que el otro. Apoya ambos brazos simétricamente para evitar contracturas trapeciales.';
-            } else {
-                newMessage = 'Tu postura está empezando a deteriorarse. Haz un pequeño reajuste para volver a la zona verde.';
-            }
+            newMessage = topRecommendation || 'Se detecta desviación moderada. Realiza un ajuste suave para volver a zona verde.';
         } else {
-            // Critical Posture
             newMood = 'danger';
-
-            if (angles.neck > 40) {
-                newMessage = '¡ALERTA CRÍTICA! Tu cuello está extremadamente flexionado. Estás agregando más de 20 kg de presión a tus vértebras cervicales. Corrige inmediatamente.';
-            } else if (angles.trunk > 45) {
-                newMessage = '¡ALERTA CRÍTICA! Postura muy encorvada. Riesgo inminente de hernia discal si levantas peso o mantienes esto por mucho tiempo.';
-            } else {
-                newMessage = '¡ALERTA CRÍTICA! Postura de alto riesgo. Por favor, levántate, estira y corrige tu posición ahora mismo.';
-            }
+            newMessage = topRecommendation || 'Riesgo alto sostenido. Corrige postura ahora y toma una pausa activa breve.';
         }
 
         setMessage(newMessage);
