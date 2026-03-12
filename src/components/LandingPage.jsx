@@ -1,5 +1,7 @@
-import React from 'react';
-import { Activity, Shield, Zap, ChevronRight, MonitorPlay, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Activity, Shield, Zap, ChevronRight, MonitorPlay, CheckCircle2, User, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import AuthModal from './AuthModal';
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
     <div className="bg-slate-800/40 backdrop-blur-md border border-slate-700/50 p-5 sm:p-6 rounded-2xl hover:bg-slate-800/60 transition-all duration-300 group">
@@ -14,8 +16,66 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 );
 
 const LandingPage = ({ onStart }) => {
+    const { user, logout } = useAuth();
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [authModalIsLogin, setAuthModalIsLogin] = useState(true);
+
+    const openLogin = () => {
+        setAuthModalIsLogin(true);
+        setIsAuthModalOpen(true);
+    };
+
+    const openRegister = () => {
+        setAuthModalIsLogin(false);
+        setIsAuthModalOpen(true);
+    };
+
+    // Require Auth to Start (Optional, but good for tracking history)
+    const handleStart = () => {
+        if (!user) {
+            openLogin();
+        } else {
+            onStart();
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-emerald-500/30 font-inter overflow-hidden relative flex flex-col items-center justify-center pt-8 sm:pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+
+            {/* Top Auth Bar */}
+            <div className="absolute top-0 right-0 p-4 sm:p-6 flex items-center gap-4 z-50">
+                {user ? (
+                    <div className="flex items-center gap-4 bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-800">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-sm font-medium hidden sm:block">{user.name}</span>
+                        </div>
+                        <div className="w-px h-6 bg-slate-700"></div>
+                        <button onClick={logout} className="text-slate-400 hover:text-red-400 transition-colors flex items-center gap-2 text-sm group">
+                            <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                            <span className="hidden sm:block">Salir</span>
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={openLogin}
+                            className="text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors px-3 py-2"
+                        >
+                            Iniciar Sesión
+                        </button>
+                        <button
+                            onClick={openRegister}
+                            className="text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 transition-all px-4 py-2 rounded-lg"
+                        >
+                            Registrarse
+                        </button>
+                    </div>
+                )}
+            </div>
+
             {/* Background Effects */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/20 rounded-full blur-[120px] opacity-30 pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-[600px] h-[400px] bg-blue-500/10 rounded-full blur-[100px] opacity-20 pointer-events-none" />
@@ -38,7 +98,7 @@ const LandingPage = ({ onStart }) => {
                     </p>
 
                     <button
-                        onClick={onStart}
+                        onClick={handleStart}
                         className="group relative inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-xl sm:rounded-2xl transition-all duration-300 shadow-[0_0_40px_-10px_rgba(16,185,129,0.5)] hover:shadow-[0_0_60px_-15px_rgba(16,185,129,0.7)] hover:-translate-y-1"
                     >
                         <MonitorPlay className="w-5 h-5" />
@@ -83,6 +143,16 @@ const LandingPage = ({ onStart }) => {
                     </div>
                 </div>
             </div>
+
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                onSuccess={() => {
+                    setIsAuthModalOpen(false);
+                    onStart();
+                }}
+                defaultIsLogin={authModalIsLogin}
+            />
         </div>
     );
 };

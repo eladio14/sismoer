@@ -8,6 +8,9 @@ import SessionStats from './components/SessionStats';
 import LandingPage from './components/LandingPage';
 import RebaReport from './components/RebaReport';
 import VirtualAssistant from './components/VirtualAssistant';
+import UserStatistics from './components/UserStatistics';
+import { useAuth } from './context/AuthContext';
+import { storageService } from './utils/storageService';
 import { calculateAngle, evaluateRiskREBA } from './utils/ergonomics';
 // CSS imports removed in favor of Tailwind
 
@@ -22,6 +25,8 @@ const DEFAULT_SETTINGS = {
 const SMOOTHING_ALPHA = 0.35;
 
 function App() {
+    const { user } = useAuth();
+    const [isStatsOpen, setIsStatsOpen] = useState(false);
     const [isStarted, setIsStarted] = useState(false);
 
     const [angles, setAngles] = useState({
@@ -267,12 +272,44 @@ function App() {
         });
     }, [isMonitoring, risk.score, risk.level, sessionTime]);
 
+    // Handle Save and Exit
+    const handleExit = async () => {
+        if (user && sessionTime > 10) { // Only save if there's meaningful data
+            try {
+                // Calculate an average Reba score from history, or use the last one
+                const avgScore = riskHistory.length > 0
+                    ? Math.round(riskHistory.reduce((acc, curr) => acc + curr.score, 0) / riskHistory.length)
+                    : risk.score;
+
+                await storageService.saveSession(user.id, {
+                    sessionTime,
+                    badPostureTime,
+                    finalScore: avgScore
+                });
+            } catch (error) {
+                console.error("Error saving session", error);
+            }
+        }
+
+        // Reset state for next session
+        setIsStarted(false);
+        setSessionTime(0);
+        setGoodPostureTime(0);
+        setBadPostureTime(0);
+        setRiskHistory([]);
+        setIsMonitoring(false);
+    };
+
     if (!isStarted) {
         return <LandingPage onStart={() => setIsStarted(true)} />;
     }
 
     return (
-        <Dashboard onOpenSettings={() => setIsSettingsOpen(true)}>
+        <Dashboard
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenStats={() => setIsStatsOpen(true)}
+            onExit={handleExit}
+        >
 
             <SessionStats
                 totalTime={sessionTime}
@@ -322,6 +359,7 @@ function App() {
                 segmentStatus={segmentStatus}
                 reportImage={reportImage}
             />
+            <UserStatistics isOpen={isStatsOpen} onClose={() => setIsStatsOpen(false)} />
         </Dashboard>
     );
 }

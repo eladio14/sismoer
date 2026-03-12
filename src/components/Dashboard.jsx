@@ -1,7 +1,7 @@
 import React from 'react';
-import { Shield, Activity } from 'lucide-react';
+import { Shield, Activity, LogOut, BarChart2, Settings } from 'lucide-react';
 
-const Dashboard = ({ children, onOpenSettings }) => {
+const Dashboard = ({ children, onOpenSettings, onExit, onOpenStats }) => {
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0e14] text-gray-100 font-sans selection:bg-blue-500/30">
       {/* Header */}
@@ -19,16 +19,28 @@ const Dashboard = ({ children, onOpenSettings }) => {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
-          {/* Settings Button passed from App or context could go here, 
-               but strictly following children pattern, we might need to inject it.
-               For now, let's just stick to the layout. 
-               The 'onOpenSettings' prop allows us to add a button here if we want.
-           */}
+
+          <button
+            onClick={onOpenStats}
+            className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 transition-colors text-xs sm:text-sm text-blue-400 font-medium"
+          >
+            <BarChart2 className="w-4 h-4" />
+            <span className="hidden sm:block">Mis Estadísticas</span>
+          </button>
+
           <button
             onClick={onOpenSettings}
-            className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-xs sm:text-sm text-gray-300 font-medium"
+            className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-xs sm:text-sm text-gray-300 font-medium"
           >
-            Configuración
+            <Settings className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={onExit}
+            className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 transition-colors text-xs sm:text-sm text-red-400 font-medium group"
+          >
+            <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span className="hidden sm:block">Salir</span>
           </button>
 
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20">
