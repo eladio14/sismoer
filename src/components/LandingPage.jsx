@@ -40,7 +40,7 @@ const LandingPage = ({ onStart }) => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-emerald-500/30 font-inter overflow-hidden relative flex flex-col items-center justify-center pt-8 sm:pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-emerald-500/30 font-inter overflow-x-hidden relative flex flex-col items-center justify-center pt-8 sm:pt-20 pb-12 px-4 sm:px-6 lg:px-8">
 
             {/* Top Auth Bar */}
             <div className="absolute top-0 right-0 p-4 sm:p-6 flex items-center gap-4 z-50">
