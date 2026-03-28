@@ -1,7 +1,9 @@
 import React from 'react';
-import { Shield, Activity, LogOut, BarChart2, Settings } from 'lucide-react';
+import { Shield, Activity, LogOut, BarChart2, Settings, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-const Dashboard = ({ children, onOpenSettings, onExit, onOpenStats }) => {
+const Dashboard = ({ children, onOpenSettings, onExit, onOpenStats, onOpenAdmin }) => {
+  const { isAdmin } = useAuth();
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0e14] text-gray-100 font-sans selection:bg-blue-500/30">
       {/* Header */}
@@ -19,6 +21,16 @@ const Dashboard = ({ children, onOpenSettings, onExit, onOpenStats }) => {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+
+          {isAdmin && (
+            <button
+              onClick={onOpenAdmin}
+              className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 hover:bg-amber-500/20 transition-colors text-xs sm:text-sm text-amber-400 font-medium"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span className="hidden sm:block">Admin</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenStats}
