@@ -1,0 +1,13 @@
+{
+  "_comment": "This file seeds the default admin account for the SMEP simulation. Credentials are stored in plain text because this project uses localStorage as a simulated database (no real backend). Do NOT use this pattern in production.",
+  "users": [
+    {
+      "id": "admin001",
+      "name": "Administrador SMEP",
+      "email": "admin@smep.com",
+      "password": "Admin2026!",
+      "role": "admin",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}
