@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [isInitializing, setIsInitializing] = useState(true);
 
     useEffect(() => {
         // Check for active session on load
@@ -13,45 +13,37 @@ export const AuthProvider = ({ children }) => {
         if (storedUser) {
             setUser(storedUser);
         }
-        setLoading(false);
+        setIsInitializing(false);
     }, []);
 
     const login = async (email, password) => {
-        setLoading(true);
         try {
             const userData = await storageService.login(email, password);
             setUser(userData);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
-        } finally {
-            setLoading(false);
         }
     };
 
     const register = async (name, email, password) => {
-        setLoading(true);
         try {
             const userData = await storageService.register(name, email, password);
             setUser(userData);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
-        } finally {
-            setLoading(false);
         }
     };
 
     const logout = async () => {
-        setLoading(true);
         await storageService.logout();
         setUser(null);
-        setLoading(false);
     };
 
     const value = {
         user,
-        loading,
+        loading: isInitializing,
         login,
         register,
         logout
@@ -59,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {!isInitializing && children}
         </AuthContext.Provider>
     );
 };
