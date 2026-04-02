@@ -9,6 +9,7 @@ import LandingPage from './components/LandingPage';
 import RebaReport from './components/RebaReport';
 import VirtualAssistant from './components/VirtualAssistant';
 import UserStatistics from './components/UserStatistics';
+import AdminPanel from './components/AdminPanel';
 import { useAuth } from './context/AuthContext';
 import { storageService } from './utils/storageService';
 import { calculateAngle, evaluateRiskREBA } from './utils/ergonomics';
@@ -27,6 +28,7 @@ const SMOOTHING_ALPHA = 0.35;
 function App() {
     const { user } = useAuth();
     const [isStatsOpen, setIsStatsOpen] = useState(false);
+    const [isAdminOpen, setIsAdminOpen] = useState(false);
     const [isStarted, setIsStarted] = useState(false);
 
     const [angles, setAngles] = useState({
@@ -306,8 +308,10 @@ function App() {
 
     return (
         <Dashboard
+            user={user}
             onOpenSettings={() => setIsSettingsOpen(true)}
             onOpenStats={() => setIsStatsOpen(true)}
+            onOpenAdmin={() => setIsAdminOpen(true)}
             onExit={handleExit}
         >
 
@@ -360,6 +364,7 @@ function App() {
                 reportImage={reportImage}
             />
             <UserStatistics isOpen={isStatsOpen} onClose={() => setIsStatsOpen(false)} />
+            <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
         </Dashboard>
     );
 }

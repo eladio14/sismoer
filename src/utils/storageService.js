@@ -4,6 +4,27 @@ const USERS_KEY = 'smep.users';
 const CURRENT_USER_KEY = 'smep.currentUser';
 const HISTORY_KEY = 'smep.history'; // Could also store inside the user object, but normalized is better
 
+// Auto-initialize admin if it doesn't exist
+(function initAdmin() {
+    try {
+        let usersInfo = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        const adminExists = usersInfo.find(u => u.email === 'admin@smep.com');
+        if (!adminExists) {
+            usersInfo.push({
+                id: 'admin_001',
+                name: 'Administrador SMEP',
+                email: 'admin@smep.com',
+                password: 'admin123',
+                role: 'admin',
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(USERS_KEY, JSON.stringify(usersInfo));
+        }
+    } catch (e) {
+        console.error("Error initializing admin user", e);
+    }
+})();
+
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const storageService = {
@@ -25,6 +46,7 @@ export const storageService = {
             name,
             email,
             password, // In a real app never store plaintext! This is just a simulation.
+            role: 'user', // Default role
             createdAt: new Date().toISOString()
         };
 
@@ -46,7 +68,7 @@ export const storageService = {
             throw new Error('Credenciales incorrectas o usuario no encontrado.');
         }
 
-        const authUser = { id: user.id, name: user.name, email: user.email };
+        const authUser = { id: user.id, name: user.name, email: user.email, role: user.role || 'user' };
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(authUser));
         return authUser;
     },
@@ -91,6 +113,29 @@ export const storageService = {
         return history
             .filter(record => record.userId === userId)
             .sort((a, b) => new Date(b.date) - new Date(a.date)); // Descending chronological
+    },
+
+    // Admin: Get all history combined with users
+    async getAllHistory() {
+        await delay(300);
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const usersInfo = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        
+        // Map user details to each history record
+        return history.map(record => {
+            const user = usersInfo.find(u => u.id === record.userId) || { name: 'Usuario Desconocido', email: '' };
+            return {
+                ...record,
+                userName: user.name,
+                userEmail: user.email
+            };
+        }).sort((a, b) => new Date(b.date) - new Date(a.date));
+    },
+
+    // Admin: Get all users
+    async getAllUsers() {
+        await delay(300);
+        return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
     }
 };
 
