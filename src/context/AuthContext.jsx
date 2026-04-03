@@ -41,12 +41,23 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const changePassword = async (userId, currentPassword, newPassword) => {
+        try {
+            await storageService.changePassword(userId, currentPassword, newPassword);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
     const value = {
         user,
         loading: isInitializing,
         login,
         register,
-        logout
+        logout,
+        changePassword,
+        isAdmin: user?.role === 'admin'
     };
 
     return (

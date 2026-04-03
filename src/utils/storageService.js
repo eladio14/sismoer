@@ -1,10 +1,30 @@
 // A simple service to simulate a database using localStorage for the SMEP system.
+import defaultUsersData from '../data/users.json';
 
 const USERS_KEY = 'smep.users';
 const CURRENT_USER_KEY = 'smep.currentUser';
 const HISTORY_KEY = 'smep.history'; // Could also store inside the user object, but normalized is better
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Seed default users (e.g. the admin account) from JSON if they don't already exist.
+function initializeStorage() {
+    const existing = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    let changed = false;
+
+    for (const defaultUser of defaultUsersData.users) {
+        if (!existing.find(u => u.id === defaultUser.id)) {
+            existing.push(defaultUser);
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        localStorage.setItem(USERS_KEY, JSON.stringify(existing));
+    }
+}
+
+initializeStorage();
 
 export const storageService = {
     // --- AUTHENTICATION ---
@@ -25,6 +45,7 @@ export const storageService = {
             name,
             email,
             password, // In a real app never store plaintext! This is just a simulation.
+            role: 'user',
             createdAt: new Date().toISOString()
         };
 
@@ -46,7 +67,7 @@ export const storageService = {
             throw new Error('Credenciales incorrectas o usuario no encontrado.');
         }
 
-        const authUser = { id: user.id, name: user.name, email: user.email };
+        const authUser = { id: user.id, name: user.name, email: user.email, role: user.role || 'user' };
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(authUser));
         return authUser;
     },
@@ -61,6 +82,43 @@ export const storageService = {
     getCurrentUser() {
         const userStr = localStorage.getItem(CURRENT_USER_KEY);
         return userStr ? JSON.parse(userStr) : null;
+    },
+
+    // Change password for a user (verifies current password first)
+    // Note: passwords are stored as plain text because this is a localStorage simulation.
+    // In a real application, use a secure hashing algorithm (e.g. bcrypt).
+    async changePassword(userId, currentPassword, newPassword) {
+        await delay(300);
+
+        const usersInfo = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        const userIndex = usersInfo.findIndex(u => u.id === userId);
+
+        if (userIndex === -1) {
+            throw new Error('Usuario no encontrado.');
+        }
+
+        if (usersInfo[userIndex].password !== currentPassword) {
+            throw new Error('La contraseña actual es incorrecta.');
+        }
+
+        usersInfo[userIndex].password = newPassword;
+        localStorage.setItem(USERS_KEY, JSON.stringify(usersInfo));
+    },
+
+    // --- ADMIN ---
+
+    // Get all registered users (passwords excluded)
+    async getAllUsers() {
+        await delay(200);
+        const usersInfo = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        return usersInfo.map(({ password, ...rest }) => rest);
+    },
+
+    // Get all session history across all users
+    async getAllHistory() {
+        await delay(200);
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        return history.sort((a, b) => new Date(b.date) - new Date(a.date));
     },
 
     // --- HISTORY & STATISTICS ---
