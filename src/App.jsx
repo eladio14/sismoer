@@ -321,9 +321,9 @@ function App() {
                 badTime={badPostureTime}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-auto pb-4 lg:pb-0">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-auto pb-4 lg:pb-0 items-start">
                 {/* Video Feed Area - Takes up 2 columns on large screens */}
-                <div className="lg:col-span-2 w-full aspect-[4/3] sm:aspect-video lg:aspect-auto flex flex-col min-h-[400px]">
+                <div className="lg:col-span-2 w-full relative aspect-video flex flex-col rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
                     <VideoFeed
                         onResults={handlePoseResults}
                         onSnapshot={setReportImage}

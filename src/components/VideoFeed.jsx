@@ -158,19 +158,19 @@ const VideoFeed = ({ onResults, onSnapshot, snapshotRequestId, riskLevel, privac
     }, [results, onResults, onSnapshot, skeletonColor]);
 
     return (
-        <div className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900/60 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] group">
+        <div className="relative w-full h-full group">
             {/* Video and Canvas Layer */}
             <div className="relative w-full h-full">
                 <video
                     ref={videoRef}
-                    className={`absolute inset-0 w-full h-full object-contain transform -scale-x-100 transition-all duration-700 ${privacyMode ? 'filter blur-2xl brightness-50' : ''}`}
+                    className={`absolute inset-0 w-full h-full object-cover transform -scale-x-100 transition-all duration-700 ${privacyMode ? 'filter blur-2xl brightness-50' : ''}`}
                     playsInline
                     autoPlay
                     muted
                 />
                 <canvas
                     ref={canvasRef}
-                    className="absolute inset-0 w-full h-full object-contain transform -scale-x-100 z-10" // Removed mix-blend-screen
+                    className="absolute inset-0 w-full h-full object-cover transform -scale-x-100 z-10" // Removed mix-blend-screen
                     width="1280"
                     height="720"
                 />
