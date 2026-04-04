@@ -3,7 +3,7 @@ import { Shield, Activity, LogOut, BarChart2, Settings, Users } from 'lucide-rea
 
 const Dashboard = ({ children, onOpenSettings, onExit, onOpenStats, onOpenAdmin, user }) => {
   return (
-    <div className="flex flex-col min-h-screen bg-[#0a0e14] text-gray-100 font-sans selection:bg-blue-500/30">
+    <div className="flex flex-col min-h-screen w-full bg-[#0a0e14] text-gray-100 font-sans selection:bg-blue-500/30">
       {/* Header */}
       <header className="flex-none min-h-[4rem] py-3 sm:py-0 border-b border-white/5 bg-white/5 backdrop-blur-md flex flex-wrap items-center justify-between px-4 sm:px-6 z-10 gap-3">
         <div className="flex items-center gap-2 sm:gap-3">
