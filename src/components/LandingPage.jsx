@@ -42,39 +42,50 @@ const LandingPage = ({ onStart }) => {
     return (
         <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-emerald-500/30 font-inter overflow-x-hidden relative flex flex-col items-center justify-center pt-8 sm:pt-20 pb-12 px-4 sm:px-6 lg:px-8">
 
-            {/* Top Auth Bar */}
-            <div className="absolute top-0 right-0 p-4 sm:p-6 flex items-center gap-4 z-50">
-                {user ? (
-                    <div className="flex items-center gap-4 bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-800">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
-                                {user.name.charAt(0).toUpperCase()}
+            {/* Header / Auth Bar */}
+            <header className="absolute top-0 inset-x-0 p-4 sm:p-6 flex items-center justify-between z-50 max-w-7xl mx-auto w-full">
+                {/* Logo Area */}
+                <div className="flex items-center gap-2">
+                    <Shield className="w-8 h-8 text-emerald-500" />
+                    <span className="font-outfit font-bold text-xl tracking-wide hidden sm:block text-white">
+                        SMEP<span className="text-emerald-500">.</span>
+                    </span>
+                </div>
+                
+                {/* Auth Area */}
+                <div className="flex items-center gap-4">
+                    {user ? (
+                        <div className="flex items-center gap-4 bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-800">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
+                                    {user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <span className="text-sm font-medium hidden sm:block">{user.name}</span>
                             </div>
-                            <span className="text-sm font-medium hidden sm:block">{user.name}</span>
+                            <div className="w-px h-6 bg-slate-700"></div>
+                            <button onClick={logout} className="text-slate-400 hover:text-red-400 transition-colors flex items-center gap-2 text-sm group">
+                                <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                                <span className="hidden sm:block">Salir</span>
+                            </button>
                         </div>
-                        <div className="w-px h-6 bg-slate-700"></div>
-                        <button onClick={logout} className="text-slate-400 hover:text-red-400 transition-colors flex items-center gap-2 text-sm group">
-                            <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                            <span className="hidden sm:block">Salir</span>
-                        </button>
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={openLogin}
-                            className="text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors px-3 py-2"
-                        >
-                            Iniciar Sesión
-                        </button>
-                        <button
-                            onClick={openRegister}
-                            className="text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 transition-all px-4 py-2 rounded-lg"
-                        >
-                            Registrarse
-                        </button>
-                    </div>
-                )}
-            </div>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={openLogin}
+                                className="text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors px-3 py-2"
+                            >
+                                Iniciar Sesión
+                            </button>
+                            <button
+                                onClick={openRegister}
+                                className="text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 transition-all px-4 py-2 rounded-lg"
+                            >
+                                Registrarse
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </header>
 
             {/* Background Effects */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/20 rounded-full blur-[120px] opacity-30 pointer-events-none" />
