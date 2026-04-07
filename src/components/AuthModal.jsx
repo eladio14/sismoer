@@ -50,11 +50,11 @@ const AuthModal = ({ isOpen, onClose, onSuccess, defaultIsLogin = true }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm px-4">
-            <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md px-4">
+            <div className="bg-slate-900/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl w-full max-w-md shadow-[0_8px_64px_rgba(0,0,0,0.5)] overflow-hidden animate-fade-in-scale">
 
                 {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b border-slate-800">
+                <div className="flex justify-between items-center p-6 border-b border-white/[0.06]">
                     <h2 className="text-2xl font-bold font-outfit text-white">
                         {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
                     </h2>
@@ -80,7 +80,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess, defaultIsLogin = true }) => {
                                         placeholder="Ej. Juan Pérez"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-10 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+                                        className="w-full bg-white/[0.04] border border-white/[0.08] text-slate-200 rounded-xl px-10 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
                                     />
                                 </div>
                             </div>
@@ -95,7 +95,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess, defaultIsLogin = true }) => {
                                     placeholder="tu@email.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-10 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+                                    className="w-full bg-white/[0.04] border border-white/[0.08] text-slate-200 rounded-xl px-10 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
                                 />
                             </div>
                         </div>
@@ -109,7 +109,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess, defaultIsLogin = true }) => {
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-10 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+                                    className="w-full bg-white/[0.04] border border-white/[0.08] text-slate-200 rounded-xl px-10 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
                                 />
                             </div>
                         </div>
@@ -125,7 +125,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess, defaultIsLogin = true }) => {
                             type="submit"
                             disabled={loading}
                             className={`w-full relative flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all duration-300 mt-6
-                                ${loading ? 'bg-emerald-500/50 text-emerald-100 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/20'}`}
+                                ${loading ? 'bg-emerald-500/50 text-emerald-100 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-400 text-white hover:-translate-y-0.5 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30'}`}
                         >
                             {loading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />

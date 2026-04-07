@@ -80,11 +80,11 @@ const AdminPanel = ({ isOpen, onClose }) => {
     });
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm px-4 py-8">
-            <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-5xl max-h-full flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md px-4 py-8">
+            <div className="bg-slate-900/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl w-full max-w-5xl max-h-full flex flex-col shadow-[0_8px_64px_rgba(0,0,0,0.5)] animate-fade-in-scale">
 
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 border-b border-slate-800 shrink-0 gap-4 sm:gap-0">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 border-b border-white/[0.06] shrink-0 gap-4 sm:gap-0">
                     <div>
                         <h2 className="text-2xl font-bold font-outfit text-white flex items-center gap-2">
                             <Database className="w-6 h-6 text-emerald-400" />

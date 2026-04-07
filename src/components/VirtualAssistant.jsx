@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, AlertCircle, CheckCircle, AlertTriangle, Sparkles, X } from 'lucide-react';
+import { Bot, AlertCircle, CheckCircle, AlertTriangle, Sparkles, X, BrainCircuit, Loader2 } from 'lucide-react';
+import { GoogleGenAI } from '@google/genai';
 
-const VirtualAssistant = ({ risk, angles, sessionTime }) => {
+const VirtualAssistant = ({ risk, angles, sessionTime, settings }) => {
     const [message, setMessage] = useState('');
     const [mood, setMood] = useState('idle'); // idle, happy, warning, danger
     const [isVisible, setIsVisible] = useState(true);
+    const [isThinking, setIsThinking] = useState(false);
+    const [lastAiTime, setLastAiTime] = useState(0);
 
     useEffect(() => {
         if (!risk) return;
@@ -37,12 +40,39 @@ const VirtualAssistant = ({ risk, angles, sessionTime }) => {
         setMessage(newMessage);
         setMood(newMood);
 
-        // Auto-show if risk is high, even if user dismissed it
-        if (risk.score >= 8 && !isVisible) {
-            setIsVisible(true);
+        // Only update with static messages if not currently showing an AI thought or recently updated by AI
+        if (!isThinking && (sessionTime - lastAiTime > 15 || lastAiTime === 0)) {
+            // Auto-show if risk is high, even if user dismissed it
+            if (risk.score >= 8 && !isVisible) {
+                setIsVisible(true);
+            }
         }
 
-    }, [risk, angles, sessionTime]);
+    }, [risk, angles, sessionTime, isThinking, lastAiTime, isVisible]);
+
+    const fetchAIAdvice = async () => {
+        if (!settings?.geminiApiKey) return;
+        setIsThinking(true);
+        setIsVisible(true); // Ensure it's open
+        try {
+            const ai = new GoogleGenAI({ apiKey: settings.geminiApiKey });
+            const prompt = `Eres un coach ergonómico (SMEP AI Coach). El trabajador lleva ${sessionTime} segundos trabajando. Su riesgo REBA actual es ${risk.score}/15 (${risk.level}). Ángulo de cuello: ${angles?.neck?.toFixed(1) || 0}°, tronco: ${angles?.trunk?.toFixed(1) || 0}°. Brevemente (1 a 2 oraciones, máximo 20 palabras), dale un consejo o ánimo amigable y profesional. No saludes.`;
+
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+            });
+            setMessage(response.text);
+            setMood(risk.score <= 3 ? 'happy' : risk.score <= 7 ? 'warning' : 'danger');
+            setLastAiTime(sessionTime);
+        } catch (error) {
+            console.error("AI Error:", error);
+            setMessage('No pude conectar con Gemini. Verifica tu API Key.');
+            setMood('warning');
+        } finally {
+            setIsThinking(false);
+        }
+    };
 
     if (!isVisible) {
         return (
@@ -77,6 +107,16 @@ const VirtualAssistant = ({ risk, angles, sessionTime }) => {
                         <Bot size={18} className={currentMood.color} />
                     </div>
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-300">SMEP AI Coach</span>
+                    {settings?.geminiApiKey && (
+                        <button 
+                            onClick={fetchAIAdvice} 
+                            disabled={isThinking}
+                            className="ml-2 flex flex-row items-center gap-1 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 transition-colors border border-indigo-500/30 disabled:opacity-50"
+                        >
+                            {isThinking ? <Loader2 size={10} className="animate-spin" /> : <BrainCircuit size={10} />}
+                            IA
+                        </button>
+                    )}
                 </div>
                 <button
                     onClick={() => setIsVisible(false)}

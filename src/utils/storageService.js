@@ -28,6 +28,24 @@ const HISTORY_KEY = 'smep.history'; // Could also store inside the user object, 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const storageService = {
+    // Update user profile
+    async updateUser(userId, updates) {
+        await delay(200);
+        const usersInfo = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        const idx = usersInfo.findIndex(u => u.id === userId);
+        if (idx === -1) throw new Error('Usuario no encontrado');
+        const user = usersInfo[idx];
+        const updatedUser = { ...user, ...updates };
+        usersInfo[idx] = updatedUser;
+        localStorage.setItem(USERS_KEY, JSON.stringify(usersInfo));
+        // If currently logged in user, update current user storage
+        const current = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null');
+        if (current && current.id === userId) {
+            const { id, name, email, role } = updatedUser;
+            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ id, name, email, role }));
+        }
+        return updatedUser;
+    },
     // --- AUTHENTICATION ---
 
     // Register

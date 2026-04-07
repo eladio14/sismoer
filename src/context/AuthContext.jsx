@@ -41,12 +41,20 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const updateProfile = async (updates) => {
+        if (!user) throw new Error('No user logged in');
+        const updatedUser = await storageService.updateUser(user.id, updates);
+        setUser(updatedUser);
+        return updatedUser;
+    };
+
     const value = {
         user,
         loading: isInitializing,
         login,
         register,
-        logout
+        logout,
+        updateProfile,
     };
 
     return (

@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import ConfirmExitModal from './components/ConfirmExitModal';
+import ProfileModal from './components/ProfileModal';
 import Dashboard from './components/Dashboard';
 import VideoFeed from './components/VideoFeed';
 import MetricsPanel from './components/MetricsPanel';
@@ -20,13 +22,21 @@ const DEFAULT_SETTINGS = {
     privacyMode: false,
     breakInterval: 30,
     deadzone: 5,
-    workProfile: 'oficina'
+    workProfile: 'oficina',
+    geminiApiKey: ''
 };
 
 const SMOOTHING_ALPHA = 0.35;
 
 function App() {
     const { user } = useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isConfirmExitOpen, setIsConfirmExitOpen] = useState(false);
+  const openConfirmExit = () => setIsConfirmExitOpen(true);
+  const confirmExit = () => {
+    setIsConfirmExitOpen(false);
+    handleExit();
+  };
     const [isStatsOpen, setIsStatsOpen] = useState(false);
     const [isAdminOpen, setIsAdminOpen] = useState(false);
     const [isStarted, setIsStarted] = useState(false);
@@ -312,7 +322,8 @@ function App() {
             onOpenSettings={() => setIsSettingsOpen(true)}
             onOpenStats={() => setIsStatsOpen(true)}
             onOpenAdmin={() => setIsAdminOpen(true)}
-            onExit={handleExit}
+            onOpenProfile={() => setIsProfileOpen(true)}
+            onOpenExit={openConfirmExit}
         >
 
             <SessionStats
@@ -323,7 +334,7 @@ function App() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-auto pb-4 lg:pb-0 items-start">
                 {/* Video Feed Area - Takes up 2 columns on large screens */}
-                <div className="lg:col-span-2 w-full relative aspect-video flex flex-col rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                <div className="lg:col-span-2 w-full relative aspect-video flex flex-col rounded-3xl overflow-hidden bg-slate-900/50 border border-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
                     <VideoFeed
                         onResults={handlePoseResults}
                         onSnapshot={setReportImage}
@@ -354,7 +365,7 @@ function App() {
             />
 
             <AlertSystem risk={risk} settings={settings} sessionTime={sessionTime} />
-            <VirtualAssistant risk={risk} angles={angles} sessionTime={sessionTime} />
+            <VirtualAssistant risk={risk} angles={angles} sessionTime={sessionTime} settings={settings} />
             <RebaReport
                 angles={angles}
                 risk={risk}
@@ -365,6 +376,12 @@ function App() {
             />
             <UserStatistics isOpen={isStatsOpen} onClose={() => setIsStatsOpen(false)} />
             <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
+            <ConfirmExitModal
+          isOpen={isConfirmExitOpen}
+          onClose={() => setIsConfirmExitOpen(false)}
+          onConfirm={confirmExit}
+        />
+        <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
         </Dashboard>
     );
 }
