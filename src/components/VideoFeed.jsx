@@ -178,23 +178,23 @@ const VideoFeed = ({ onResults, onSnapshot, snapshotRequestId, riskLevel, privac
 
             {/* Loading State */}
             {!isLoaded && !error && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#030712]/80 backdrop-blur-md z-10 transition-opacity duration-500">
-                    <div className="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
-                    <p className="text-blue-400 font-bold uppercase tracking-[0.2em] animate-pulse">Iniciando Motor de IA</p>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-md z-10 transition-opacity duration-500">
+                    <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-500 rounded-full animate-spin mb-6 shadow-sm"></div>
+                    <p className="text-blue-600 font-bold uppercase tracking-[0.2em] animate-pulse">Iniciando Motor de IA</p>
                 </div>
             )}
 
             {/* Error State */}
             {error && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-rose-950/90 backdrop-blur-md z-20 p-8 text-center">
-                    <div className="p-4 bg-rose-500/20 rounded-full mb-6 animate-pulse">
-                        <AlertCircle size={48} className="text-rose-400 drop-shadow-[0_0_15px_rgba(244,63,94,0.6)]" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md z-20 p-8 text-center rounded-3xl">
+                    <div className="p-4 bg-rose-100 rounded-full mb-6 animate-pulse">
+                        <AlertCircle size={48} className="text-rose-500" />
                     </div>
-                    <p className="text-white text-xl font-black uppercase tracking-wider mb-2">Error de Sistema</p>
-                    <p className="text-rose-200/80 mb-8 max-w-sm">{error}</p>
+                    <p className="text-slate-800 text-xl font-black uppercase tracking-wider mb-2">Error de Sistema</p>
+                    <p className="text-slate-500 mb-8 max-w-sm">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="flex items-center gap-3 px-6 py-3 bg-rose-500 text-white rounded-xl hover:bg-rose-400 hover:shadow-[0_0_20px_rgba(244,63,94,0.4)] transition-all font-bold tracking-wide"
+                        className="flex items-center gap-3 px-6 py-3 bg-rose-500 text-white rounded-xl hover:bg-rose-600 hover:shadow-md hover:shadow-rose-500/20 transition-all font-bold tracking-wide"
                     >
                         <RefreshCw size={20} />
                         REINICIAR MÓDULO
@@ -205,32 +205,32 @@ const VideoFeed = ({ onResults, onSnapshot, snapshotRequestId, riskLevel, privac
             {/* HUD Overlay */}
             <div className="absolute inset-0 pointer-events-none p-6 flex flex-col justify-between z-10">
                 <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3 px-4 py-2 bg-slate-900/60 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
-                        <Camera size={16} className="text-blue-400 animate-pulse" />
-                        <span className="text-xs font-bold tracking-[0.2em] text-blue-100 uppercase">System Vision</span>
+                    <div className="flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-md rounded-xl border border-slate-200 shadow-sm">
+                        <Camera size={16} className="text-blue-600 animate-pulse" />
+                        <span className="text-xs font-bold tracking-[0.2em] text-blue-800 uppercase">System Vision</span>
                     </div>
 
                     {isLoaded && (
-                        <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 backdrop-blur-md rounded-xl border border-emerald-500/20 shadow-lg">
-                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,1)]"></div>
-                            <span className="text-xs font-bold tracking-[0.2em] text-emerald-300 uppercase">Tracking</span>
+                        <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50 backdrop-blur-md rounded-xl border border-emerald-200 shadow-sm">
+                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <span className="text-xs font-bold tracking-[0.2em] text-emerald-700 uppercase">Tracking</span>
                         </div>
                     )}
                 </div>
 
                 {/* Bottom Stats */}
                 <div className="flex justify-between items-end">
-                    <div className="px-4 py-2 bg-slate-900/60 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
-                        <span className="text-[9px] text-blue-300/70 font-bold uppercase tracking-[0.3em] block mb-0.5">AI Engine</span>
-                        <span className="text-xs font-black tracking-wider text-white">BlazePose 3D</span>
+                    <div className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-xl border border-slate-200 shadow-sm">
+                        <span className="text-[9px] text-blue-600/70 font-bold uppercase tracking-[0.3em] block mb-0.5">AI Engine</span>
+                        <span className="text-xs font-black tracking-wider text-slate-800">BlazePose 3D</span>
                     </div>
-                    <div className="w-8 h-8 border-r-2 border-b-2 border-white/20 rounded-br-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="w-8 h-8 border-r-2 border-b-2 border-white/80 rounded-br-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
                 </div>
 
                 {/* Crosshairs */}
-                <div className="absolute top-6 right-6 w-8 h-8 border-r-2 border-t-2 border-white/20 rounded-tr-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                <div className="absolute bottom-6 left-6 w-8 h-8 border-l-2 border-b-2 border-white/20 rounded-bl-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                <div className="absolute top-6 left-6 w-8 h-8 border-l-2 border-t-2 border-white/20 rounded-tl-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute top-6 right-6 w-8 h-8 border-r-2 border-t-2 border-white/80 rounded-tr-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute bottom-6 left-6 w-8 h-8 border-l-2 border-b-2 border-white/80 rounded-bl-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute top-6 left-6 w-8 h-8 border-l-2 border-t-2 border-white/80 rounded-tl-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
             </div>
         </div>
     );

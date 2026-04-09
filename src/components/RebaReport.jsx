@@ -128,8 +128,8 @@ const RebaReport = ({ angles, risk, settings, riskHistory = [], segmentStatus = 
                         <p className="text-xl font-black text-slate-800">{risk.level}</p>
                     </div>
 
-                    <div className="flex-1 text-center p-3 rounded bg-slate-900 text-white shadow-md">
-                        <p className="text-sm font-bold text-slate-400 uppercase">Acción Requerida</p>
+                    <div className="flex-1 text-center p-3 rounded bg-slate-100 border border-slate-300 text-slate-800 shadow-sm">
+                        <p className="text-sm font-bold text-slate-500 uppercase">Acción Requerida</p>
                         <p className="text-lg font-bold">{risk.action}</p>
                     </div>
                 </div>

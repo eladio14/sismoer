@@ -284,32 +284,132 @@ function App() {
         });
     }, [isMonitoring, risk.score, risk.level, sessionTime]);
 
+    // --- Build full session data object ---
+    const buildSessionData = useCallback(() => {
+        const avgScore = riskHistory.length > 0
+            ? Math.round(riskHistory.reduce((acc, curr) => acc + curr.score, 0) / riskHistory.length)
+            : risk.score;
+
+        const peakScore = riskHistory.length > 0
+            ? Math.max(...riskHistory.map(h => h.score))
+            : risk.score;
+
+        return {
+            sessionTime,
+            goodPostureTime,
+            badPostureTime,
+            finalScore: avgScore,
+            peakScore,
+            riskLevel: risk.level,
+            sampleCount: riskHistory.length,
+            segmentStatus: { ...segmentStatus },
+            riskHistory: riskHistory.slice(-18), // save last 3 min of samples
+        };
+    }, [sessionTime, goodPostureTime, badPostureTime, risk, riskHistory, segmentStatus]);
+
+    // --- Auto-save every 60 seconds ---
+    const sessionSavedRef = useRef(false);
+
+    useEffect(() => {
+        if (!isMonitoring || !user) return;
+
+        const autoSaveInterval = setInterval(() => {
+            if (sessionTime > 10) {
+                const data = buildSessionData();
+                // Save to localStorage directly for auto-save (no async delay needed)
+                try {
+                    const historyKey = 'smep.history';
+                    const autoSaveKey = `smep.autosave.${user.id}`;
+                    localStorage.setItem(autoSaveKey, JSON.stringify({
+                        userId: user.id,
+                        date: new Date().toISOString(),
+                        data
+                    }));
+                } catch (e) {
+                    console.error('Auto-save failed:', e);
+                }
+            }
+        }, 60000); // Every 60 seconds
+
+        return () => clearInterval(autoSaveInterval);
+    }, [isMonitoring, user, sessionTime, buildSessionData]);
+
+    // --- Save on browser close/refresh ---
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (user && sessionTime > 10 && !sessionSavedRef.current) {
+                const data = buildSessionData();
+                const history = JSON.parse(localStorage.getItem('smep.history') || '[]');
+                history.push({
+                    id: Math.random().toString(36).substring(2, 9) + Date.now().toString(36),
+                    userId: user.id,
+                    date: new Date().toISOString(),
+                    data
+                });
+                localStorage.setItem('smep.history', JSON.stringify(history));
+                // Clean autosave
+                localStorage.removeItem(`smep.autosave.${user.id}`);
+                sessionSavedRef.current = true;
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [user, sessionTime, buildSessionData]);
+
+    // --- Recover autosaved session on mount ---
+    useEffect(() => {
+        if (!user) return;
+        const autoSaveKey = `smep.autosave.${user.id}`;
+        const autosaved = localStorage.getItem(autoSaveKey);
+        if (autosaved) {
+            try {
+                const record = JSON.parse(autosaved);
+                // Only recover if it's from today and has meaningful data
+                const savedDate = new Date(record.date);
+                const now = new Date();
+                const sameDay = savedDate.toDateString() === now.toDateString();
+                if (sameDay && record.data?.sessionTime > 30) {
+                    // Commit the autosaved session to history
+                    const history = JSON.parse(localStorage.getItem('smep.history') || '[]');
+                    history.push({
+                        id: Math.random().toString(36).substring(2, 9) + Date.now().toString(36),
+                        userId: user.id,
+                        date: record.date,
+                        data: record.data
+                    });
+                    localStorage.setItem('smep.history', JSON.stringify(history));
+                }
+            } catch (e) {
+                console.error('Failed to recover autosaved session:', e);
+            } finally {
+                localStorage.removeItem(autoSaveKey);
+            }
+        }
+    }, [user]);
+
     // Handle Save and Exit
     const handleExit = async () => {
-        if (user && sessionTime > 10) { // Only save if there's meaningful data
+        if (user && sessionTime > 5) {
             try {
-                // Calculate an average Reba score from history, or use the last one
-                const avgScore = riskHistory.length > 0
-                    ? Math.round(riskHistory.reduce((acc, curr) => acc + curr.score, 0) / riskHistory.length)
-                    : risk.score;
-
-                await storageService.saveSession(user.id, {
-                    sessionTime,
-                    badPostureTime,
-                    finalScore: avgScore
-                });
+                const data = buildSessionData();
+                await storageService.saveSession(user.id, data);
+                sessionSavedRef.current = true;
+                // Clean autosave
+                localStorage.removeItem(`smep.autosave.${user.id}`);
             } catch (error) {
                 console.error("Error saving session", error);
             }
         }
 
-        // Reset state for next session
+        // Reset state for next session AFTER saving
         setIsStarted(false);
         setSessionTime(0);
         setGoodPostureTime(0);
         setBadPostureTime(0);
         setRiskHistory([]);
         setIsMonitoring(false);
+        sessionSavedRef.current = false;
     };
 
     if (!isStarted) {

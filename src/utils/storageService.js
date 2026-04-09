@@ -41,8 +41,8 @@ export const storageService = {
         // If currently logged in user, update current user storage
         const current = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null');
         if (current && current.id === userId) {
-            const { id, name, email, role } = updatedUser;
-            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ id, name, email, role }));
+            const { id, name, email, role, photoUrl } = updatedUser;
+            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ id, name, email, role, photoUrl }));
         }
         return updatedUser;
     },
@@ -86,7 +86,7 @@ export const storageService = {
             throw new Error('Credenciales incorrectas o usuario no encontrado.');
         }
 
-        const authUser = { id: user.id, name: user.name, email: user.email, role: user.role || 'user' };
+        const authUser = { id: user.id, name: user.name, email: user.email, role: user.role || 'user', photoUrl: user.photoUrl };
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(authUser));
         return authUser;
     },
@@ -154,6 +154,35 @@ export const storageService = {
     async getAllUsers() {
         await delay(300);
         return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    },
+
+    // --- PASSWORD RECOVERY ---
+
+    // Check if email exists in the system
+    async checkEmailExists(email) {
+        await delay(300);
+        const usersInfo = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        const user = usersInfo.find(u => u.email === email);
+        if (!user) {
+            throw new Error('No se encontró ninguna cuenta asociada a ese correo electrónico.');
+        }
+        return { success: true, name: user.name };
+    },
+
+    // Reset password for a given email
+    async resetPassword(email, newPassword) {
+        await delay(400);
+        const usersInfo = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+        const idx = usersInfo.findIndex(u => u.email === email);
+        if (idx === -1) {
+            throw new Error('No se encontró ninguna cuenta asociada a ese correo electrónico.');
+        }
+        if (!newPassword || newPassword.length < 4) {
+            throw new Error('La contraseña debe tener al menos 4 caracteres.');
+        }
+        usersInfo[idx].password = newPassword;
+        localStorage.setItem(USERS_KEY, JSON.stringify(usersInfo));
+        return { success: true };
     }
 };
 

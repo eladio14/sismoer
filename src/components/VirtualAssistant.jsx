@@ -78,9 +78,9 @@ const VirtualAssistant = ({ risk, angles, sessionTime, settings }) => {
         return (
             <button
                 onClick={() => setIsVisible(true)}
-                className="fixed bottom-6 right-6 p-4 bg-slate-800/90 hover:bg-slate-700/90 text-white rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-white/10 backdrop-blur-md transition-all z-50 group hover:scale-110"
+                className="fixed bottom-6 right-6 p-4 bg-white hover:bg-slate-50 text-slate-800 rounded-full shadow-2xl border border-slate-200 backdrop-blur-md transition-all z-50 group hover:scale-110"
             >
-                <Bot size={24} className="text-blue-400 group-hover:animate-pulse" />
+                <Bot size={24} className="text-blue-500 group-hover:animate-pulse" />
                 <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-blue-500 animate-ping opacity-75"></span>
                 <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-blue-500"></span>
             </button>
@@ -88,30 +88,30 @@ const VirtualAssistant = ({ risk, angles, sessionTime, settings }) => {
     }
 
     const moodConfig = {
-        idle: { icon: Sparkles, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', glow: 'shadow-[0_0_30px_rgba(59,130,246,0.3)]' },
-        happy: { icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', glow: 'shadow-[0_0_30px_rgba(16,185,129,0.3)]' },
-        warning: { icon: AlertCircle, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', glow: 'shadow-[0_0_30px_rgba(245,158,11,0.3)]' },
-        danger: { icon: AlertTriangle, color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/20', glow: 'shadow-[0_0_30px_rgba(244,63,94,0.3)] animate-pulse' }
+        idle: { icon: Sparkles, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200', glow: 'shadow-[0_0_30px_rgba(59,130,246,0.15)]' },
+        happy: { icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'border-emerald-200', glow: 'shadow-[0_0_30px_rgba(16,185,129,0.15)]' },
+        warning: { icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200', glow: 'shadow-[0_0_30px_rgba(245,158,11,0.15)]' },
+        danger: { icon: AlertTriangle, color: 'text-rose-500', bg: 'bg-rose-50', border: 'border-rose-200', glow: 'shadow-[0_0_30px_rgba(244,63,94,0.15)] animate-pulse' }
     };
 
     const currentMood = moodConfig[mood];
     const Icon = currentMood.icon;
 
     return (
-        <div className={`fixed bottom-6 right-6 w-[85vw] max-w-[340px] z-50 p-4 rounded-2xl sm:rounded-3xl backdrop-blur-xl border ${currentMood.border} bg-slate-900/80 ${currentMood.glow} transition-all duration-500 ease-out transform translate-y-0 opacity-100 flex flex-col gap-3 shadow-2xl`}>
+        <div className={`fixed bottom-6 right-6 w-[85vw] max-w-[340px] z-50 p-4 rounded-2xl sm:rounded-3xl backdrop-blur-xl border ${currentMood.border} bg-white/95 ${currentMood.glow} transition-all duration-500 ease-out transform translate-y-0 opacity-100 flex flex-col gap-3 shadow-2xl`}>
 
             {/* Header */}
-            <div className="flex justify-between items-center border-b border-white/10 pb-2">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-2">
                 <div className="flex items-center gap-2">
                     <div className={`p-1.5 rounded-lg ${currentMood.bg}`}>
                         <Bot size={18} className={currentMood.color} />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-300">SMEP AI Coach</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">SMEP AI Coach</span>
                     {settings?.geminiApiKey && (
                         <button 
                             onClick={fetchAIAdvice} 
                             disabled={isThinking}
-                            className="ml-2 flex flex-row items-center gap-1 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 transition-colors border border-indigo-500/30 disabled:opacity-50"
+                            className="ml-2 flex flex-row items-center gap-1 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors border border-indigo-200 disabled:opacity-50"
                         >
                             {isThinking ? <Loader2 size={10} className="animate-spin" /> : <BrainCircuit size={10} />}
                             IA
@@ -120,7 +120,7 @@ const VirtualAssistant = ({ risk, angles, sessionTime, settings }) => {
                 </div>
                 <button
                     onClick={() => setIsVisible(false)}
-                    className="p-1 hover:bg-white/10 rounded-md text-slate-500 hover:text-white transition-colors"
+                    className="p-1 hover:bg-slate-100 rounded-md text-slate-400 hover:text-slate-600 transition-colors"
                 >
                     <X size={16} />
                 </button>
@@ -132,14 +132,14 @@ const VirtualAssistant = ({ risk, angles, sessionTime, settings }) => {
                     <Icon size={20} className={currentMood.color} />
                 </div>
                 <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-200 leading-relaxed font-inter">
+                    <p className="text-sm font-medium text-slate-700 leading-relaxed font-inter">
                         {message}
                     </p>
                 </div>
             </div>
 
             {/* Decorative tail */}
-            <div className="absolute -bottom-2 right-8 w-4 h-4 bg-slate-900/80 border-b border-r border-white/10 transform rotate-45 backdrop-blur-xl"></div>
+            <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white/95 border-b border-r border-slate-200 transform rotate-45 backdrop-blur-xl"></div>
         </div>
     );
 };

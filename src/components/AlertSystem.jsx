@@ -74,7 +74,7 @@ const AlertSystem = ({ risk, settings, sessionTime }) => {
     return (
         <Toaster
             position="top-right"
-            theme="dark"
+            theme="light"
             richColors
             closeButton
         />

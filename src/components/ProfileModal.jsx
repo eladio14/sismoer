@@ -1,18 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { X, User, Save } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, User, Save, Camera } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const { user, updateProfile } = useAuth();
-  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', photoUrl: '' });
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen && user) {
-      setFormData({ name: user.name || '', email: user.email || '' });
+      setFormData({ name: user.name || '', email: user.email || '', photoUrl: user.photoUrl || '' });
     }
   }, [isOpen, user]);
+
+  const handlePhotoClick = () => {
+    if (fileInputRef.current) {
+        fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+          if (file.size > 2 * 1024 * 1024) { // 2MB limit
+              setError('La imagen es demasiado grande. Máximo 2MB.');
+              return;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+              setFormData(prev => ({ ...prev, photoUrl: reader.result }));
+          };
+          reader.readAsDataURL(file);
+      }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,21 +57,21 @@ const ProfileModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onClose}>
       <div
-        className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-xl text-slate-200 rounded-2xl shadow-[0_8px_64px_rgba(0,0,0,0.5)] border border-white/[0.08] overflow-hidden animate-fade-in-scale"
+        className="relative w-full max-w-md bg-white backdrop-blur-xl text-slate-800 rounded-2xl shadow-xl border border-slate-200 overflow-hidden animate-fade-in-scale"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-white/[0.06]">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2.5 font-outfit">
-            <div className="p-1.5 bg-blue-500/15 rounded-lg border border-blue-500/20">
-              <User size={16} className="text-blue-400" />
+        <div className="flex items-center justify-between p-5 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2.5 font-outfit">
+            <div className="p-1.5 bg-blue-50 rounded-lg border border-blue-100">
+              <User size={16} className="text-blue-600" />
             </div>
             Perfil de Usuario
           </h2>
           <button
-            className="text-slate-500 hover:text-white transition-colors p-1.5 hover:bg-white/10 rounded-lg"
+            className="text-slate-400 hover:text-slate-600 transition-colors p-1.5 hover:bg-slate-100 rounded-lg"
             onClick={onClose}
             aria-label="Cerrar"
           >
@@ -61,9 +83,26 @@ const ProfileModal = ({ isOpen, onClose }) => {
           {/* Avatar */}
           {user && (
             <div className="flex flex-col items-center mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-blue-500/20 mb-2">
-                {user.name?.charAt(0)?.toUpperCase() || 'U'}
+              <div 
+                  onClick={handlePhotoClick}
+                  className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-md shadow-blue-500/20 mb-2 cursor-pointer group hover:opacity-90 transition-opacity overflow-hidden"
+              >
+                  {formData.photoUrl ? (
+                      <img src={formData.photoUrl} alt="Perfil" className="w-full h-full object-cover" />
+                  ) : (
+                      user.name?.charAt(0)?.toUpperCase() || 'U'
+                  )}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Camera className="text-white w-6 h-6" />
+                  </div>
               </div>
+              <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange} 
+                  accept="image/*" 
+                  className="hidden" 
+              />
               <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">{user.role === 'admin' ? 'Administrador' : 'Usuario'}</span>
             </div>
           )}
@@ -83,7 +122,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
                 id="name"
                 name="name"
                 type="text"
-                className="w-full rounded-xl bg-white/[0.04] border border-white/[0.08] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none px-3.5 py-2.5 text-sm text-white transition-colors placeholder:text-slate-600"
+                className="w-full rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none px-3.5 py-2.5 text-sm text-slate-800 transition-colors placeholder:text-slate-400"
                 value={formData.name}
                 onChange={handleChange}
               />
@@ -96,7 +135,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
                 id="email"
                 name="email"
                 type="email"
-                className="w-full rounded-xl bg-white/[0.04] border border-white/[0.08] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none px-3.5 py-2.5 text-sm text-white transition-colors placeholder:text-slate-600"
+                className="w-full rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none px-3.5 py-2.5 text-sm text-slate-800 transition-colors placeholder:text-slate-400"
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -105,14 +144,14 @@ const ProfileModal = ({ isOpen, onClose }) => {
 
           <div className="flex gap-3 mt-6">
             <button
-              className="flex-1 px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-sm font-medium transition-all text-slate-300"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-sm font-medium transition-all text-slate-600"
               onClick={onClose}
               disabled={saving}
             >
               Cancelar
             </button>
             <button
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-sm font-semibold transition-all text-white shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-sm font-semibold transition-all text-white shadow-md shadow-emerald-500/10 hover:-translate-y-0.5"
               onClick={handleSave}
               disabled={saving}
             >
