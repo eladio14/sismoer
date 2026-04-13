@@ -9,6 +9,7 @@ import AlertSystem from './components/AlertSystem';
 import SessionStats from './components/SessionStats';
 import LandingPage from './components/LandingPage';
 import RebaReport from './components/RebaReport';
+import RebaFieldSheet from './components/RebaFieldSheet';
 import VirtualAssistant from './components/VirtualAssistant';
 import UserStatistics from './components/UserStatistics';
 import AdminPanel from './components/AdminPanel';
@@ -432,9 +433,9 @@ function App() {
                 badTime={badPostureTime}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-auto pb-4 lg:pb-0 items-start">
-                {/* Video Feed Area - Takes up 2 columns on large screens */}
-                <div className="lg:col-span-2 w-full relative aspect-video flex flex-col rounded-3xl overflow-hidden bg-slate-900/50 border border-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 items-start">
+                {/* Video Feed — 2 cols */}
+                <div className="lg:col-span-2 w-full relative aspect-video rounded-3xl overflow-hidden bg-slate-900/60 border border-slate-200 shadow-lg">
                     <VideoFeed
                         onResults={handlePoseResults}
                         onSnapshot={setReportImage}
@@ -444,8 +445,8 @@ function App() {
                     />
                 </div>
 
-                {/* Metrics Panel - Takes up 1 column */}
-                <div className="lg:col-span-1 h-auto lg:h-full">
+                {/* Metrics Panel — 1 col */}
+                <div className="lg:col-span-1">
                     <MetricsPanel
                         angles={angles}
                         risk={risk}
@@ -454,6 +455,33 @@ function App() {
                         onPrint={handlePrintReport}
                     />
                 </div>
+            </div>
+
+            {/* ── Hoja de Campo REBA — siempre visible ─────────────────── */}
+            <div className="mt-5 pb-8">
+                <div className="flex items-center justify-between px-1 mb-3">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-500 to-indigo-500"></div>
+                        <div>
+                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-wider leading-none">Hoja de Campo R.E.B.A.</h2>
+                            <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">Evaluación Ergonómica en Tiempo Real</p>
+                        </div>
+                    </div>
+                    {risk?.subScores && (
+                        <div className={`px-3 py-1.5 rounded-xl text-xs font-black border shadow-sm ${
+                            (risk.score||0) >= 8 ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                            (risk.score||0) >= 4 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                            'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        }`}>
+                            REBA {risk.score} · {risk.level}
+                        </div>
+                    )}
+                </div>
+                <RebaFieldSheet
+                    angles={angles}
+                    risk={risk}
+                    onPrint={handlePrintReport}
+                />
             </div>
 
             <SettingsModal
