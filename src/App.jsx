@@ -30,7 +30,7 @@ const DEFAULT_SETTINGS = {
 const SMOOTHING_ALPHA = 0.35;
 
 function App() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isConfirmExitOpen, setIsConfirmExitOpen] = useState(false);
   const openConfirmExit = () => setIsConfirmExitOpen(true);
@@ -411,6 +411,11 @@ function App() {
         setRiskHistory([]);
         setIsMonitoring(false);
         sessionSavedRef.current = false;
+        
+        // Log out the user completely after saving session
+        if (logout) {
+            logout();
+        }
     };
 
     if (!isStarted) {
