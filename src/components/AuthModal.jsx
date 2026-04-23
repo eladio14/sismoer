@@ -46,6 +46,12 @@ const AuthModal = ({ isOpen, onClose, onSuccess, defaultIsLogin = true }) => {
             return;
         }
 
+        if (mode === 'register' && password !== confirmPassword) {
+            setError('Las contraseñas no coinciden.');
+            setLoading(false);
+            return;
+        }
+
         let result;
         if (mode === 'login') {
             result = await login(email, password);
@@ -209,6 +215,22 @@ const AuthModal = ({ isOpen, onClose, onSuccess, defaultIsLogin = true }) => {
                                         />
                                     </div>
                                 </div>
+
+                                {mode === 'register' && (
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-medium text-slate-600 ml-1">Confirmar Contraseña</label>
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                            <input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-10 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
 
                                 {error && (
                                     <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-xl flex items-start gap-2">
