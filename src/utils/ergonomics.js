@@ -130,7 +130,19 @@ export const evaluateRiskREBA = (angles, calibration = {}, options = {}) => {
     const neckScore = getNeckScore(adjustedNeck);
     const legsScore = getLegScore(Math.max(angles.knee_l || 180, angles.knee_r || 180));
 
-    const upperScore = Math.max(getUpperArmScore(angles.shoulder_l), getUpperArmScore(angles.shoulder_r));
+    // Detect Shrugging
+    const baselineShrugRatio = calibration.shrug_ratio || 0;
+    const currentShrugRatio = angles.shrug_ratio || 0;
+    let isShrugging = false;
+    // If the trunk/neck ratio increases by 15%, it means shoulders are closer to ears
+    if (baselineShrugRatio > 0 && currentShrugRatio > baselineShrugRatio * 1.15) {
+        isShrugging = true;
+    }
+
+    let upperScore = Math.max(getUpperArmScore(angles.shoulder_l), getUpperArmScore(angles.shoulder_r));
+    if (isShrugging) {
+        upperScore += 1; // REBA rule: if shoulder is raised, add 1 to upper arm score
+    }
     const lowerScore = Math.max(getLowerArmScore(angles.elbow_l || 0), getLowerArmScore(angles.elbow_r || 0));
     const wristScore = Math.max(getWristScore(angles.wrist_l || 180), getWristScore(angles.wrist_r || 180));
 
@@ -192,6 +204,10 @@ export const evaluateRiskREBA = (angles, calibration = {}, options = {}) => {
         issues.push('Asimetría de hombros');
         recommendations.push('Centra el monitor y distribuye el apoyo de ambos antebrazos.');
     }
+    if (isShrugging) {
+        issues.push('Hombros encogidos/elevados');
+        recommendations.push('Relaja los hombros. Ajusta la altura de tu escritorio o silla.');
+    }
     if (Math.abs(180 - (angles.elbow_l || 180)) > 80 || Math.abs(180 - (angles.elbow_r || 180)) > 80) {
         issues.push('Ángulo de codo fuera de rango confortable');
         recommendations.push('Ajusta altura de silla para mantener codos cercanos a 90°.');
@@ -217,7 +233,8 @@ export const evaluateRiskREBA = (angles, calibration = {}, options = {}) => {
             scoreC: scoreC,
             activity: activityScore,
             adjustedTrunk,
-            adjustedNeck
+            adjustedNeck,
+            isShrugging
         }
     };
 };
