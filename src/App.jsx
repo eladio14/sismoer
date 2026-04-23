@@ -54,7 +54,8 @@ function App() {
         wrist_l: 0, wrist_r: 0,
         hip_l: 0, hip_r: 0,
         knee_l: 0, knee_r: 0,
-        ankle_l: 0, ankle_r: 0
+        ankle_l: 0, ankle_r: 0,
+        shrug_ratio: 0
     });
 
     // Risk State
@@ -87,7 +88,8 @@ function App() {
     const [settings, setSettings] = useState(DEFAULT_SETTINGS);
     const [calibration, setCalibration] = useState({
         trunk: 0,
-        neck: 0
+        neck: 0,
+        shrug_ratio: 0
     });
 
     const smoothedAnglesRef = useRef(null);
@@ -146,7 +148,8 @@ function App() {
         // Use current angles as the new "zero"
         setCalibration({
             trunk: angles.trunk || 0,
-            neck: angles.neck || 0
+            neck: angles.neck || 0,
+            shrug_ratio: angles.shrug_ratio || 0
         });
     }, [angles]);
 
@@ -217,6 +220,10 @@ function App() {
         const ankle_l = calculateAngle(p(25), p(27), p(31));
         const ankle_r = calculateAngle(p(26), p(28), p(32));
 
+        const neckLength = Math.hypot(midShoulder.x - midEar.x, midShoulder.y - midEar.y);
+        const trunkLength = Math.hypot(midHip.x - midShoulder.x, midHip.y - midShoulder.y);
+        const shrug_ratio = neckLength > 0 ? trunkLength / neckLength : 0;
+
         const rawAngles = {
             neck: neckAngle,
             trunk: trunkAngle,
@@ -229,7 +236,8 @@ function App() {
             wrist_l, wrist_r,
             hip_l, hip_r,
             knee_l, knee_r,
-            ankle_l, ankle_r
+            ankle_l, ankle_r,
+            shrug_ratio
         };
 
         const previous = smoothedAnglesRef.current;
