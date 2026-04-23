@@ -155,21 +155,24 @@ const SettingsModal = ({ isOpen, onClose, settings, onUpdateSettings, onCalibrat
                     {/* AI */}
                     <div className="space-y-3">
                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Inteligencia Artificial</label>
-                        <div className="flex flex-col p-3.5 bg-slate-50 rounded-xl border border-slate-200 shadow-sm gap-3">
+                        <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200 hover:border-indigo-200 transition-colors shadow-sm">
                             <div className="flex items-center gap-3">
-                                <BrainCircuit className="text-indigo-500 w-5 h-5" />
+                                <BrainCircuit className={`w-5 h-5 ${settings.geminiApiKey ? 'text-indigo-500' : 'text-slate-400'}`} />
                                 <div>
-                                    <p className="text-slate-800 font-medium text-sm">Clave API de Gemini</p>
-                                    <p className="text-xs text-slate-500">Habilita el coach inteligente con IA</p>
+                                    <p className="text-slate-800 font-medium text-sm">SMEP AI Coach</p>
+                                    <p className="text-xs text-slate-500">Habilitar asistente con Inteligencia Artificial</p>
                                 </div>
                             </div>
-                            <input
-                                type="password"
-                                placeholder="AIzaSy..."
-                                value={settings.geminiApiKey || ''}
-                                onChange={(e) => onUpdateSettings({ ...settings, geminiApiKey: e.target.value })}
-                                className="w-full bg-white text-slate-800 text-sm rounded-lg border border-slate-300 focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none placeholder:text-slate-400"
-                            />
+                            <button
+                                onClick={() => {
+                                    const isEnabled = !!settings.geminiApiKey;
+                                    const newKey = isEnabled ? '' : 'AIzaSyAoDi-Xa7G0fQn0OLUK4TvhyWo0nU5Senk';
+                                    onUpdateSettings({ ...settings, geminiApiKey: newKey });
+                                }}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${settings.geminiApiKey ? 'bg-indigo-500' : 'bg-slate-300'}`}
+                            >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow flex items-center justify-center ${settings.geminiApiKey ? 'translate-x-6' : 'translate-x-1'}`} />
+                            </button>
                         </div>
                     </div>
                 </div>

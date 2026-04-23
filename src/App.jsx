@@ -24,7 +24,8 @@ const DEFAULT_SETTINGS = {
     breakInterval: 30,
     deadzone: 5,
     workProfile: 'oficina',
-    geminiApiKey: ''
+    geminiApiKey: '',
+    aiCode: ''
 };
 
 const SMOOTHING_ALPHA = 0.35;
