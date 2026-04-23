@@ -134,8 +134,8 @@ export const evaluateRiskREBA = (angles, calibration = {}, options = {}) => {
     const baselineShrugRatio = calibration.shrug_ratio || 0;
     const currentShrugRatio = angles.shrug_ratio || 0;
     let isShrugging = false;
-    // If the trunk/neck ratio increases by 15%, it means shoulders are closer to ears
-    if (baselineShrugRatio > 0 && currentShrugRatio > baselineShrugRatio * 1.15) {
+    // If the trunk/neck ratio increases by 8%, it means shoulders are closer to ears
+    if (baselineShrugRatio > 0 && currentShrugRatio > baselineShrugRatio * 1.08) {
         isShrugging = true;
     }
 

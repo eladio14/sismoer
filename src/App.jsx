@@ -251,8 +251,14 @@ function App() {
         smoothedAnglesRef.current = smoothedAngles;
         setAngles(smoothedAngles);
 
+        let currentCalibration = calibration;
+        if (!currentCalibration.shrug_ratio && smoothedAngles.shrug_ratio > 0) {
+            currentCalibration = { ...currentCalibration, shrug_ratio: smoothedAngles.shrug_ratio };
+            setCalibration(currentCalibration);
+        }
+
         // Evaluate Risk using the new logic
-        const riskEval = evaluateRiskREBA(smoothedAngles, calibration, { deadzone: settings.deadzone || 0 });
+        const riskEval = evaluateRiskREBA(smoothedAngles, currentCalibration, { deadzone: settings.deadzone || 0 });
 
         setRisk(riskEval);
 
@@ -275,7 +281,10 @@ function App() {
         setSegmentStatus({
             cervical: { status: statusByThreshold(riskEval.subScores.adjustedNeck || 0, 10, 20), value: riskEval.subScores.adjustedNeck || 0 },
             tronco: { status: statusByThreshold(riskEval.subScores.adjustedTrunk || 0, 10, 20), value: riskEval.subScores.adjustedTrunk || 0 },
-            hombros: { status: statusByThreshold(shoulderDiff, 2, 4), value: shoulderDiff },
+            hombros: { 
+                status: riskEval.subScores.isShrugging ? 'risk' : statusByThreshold(shoulderDiff, 2, 4), 
+                value: shoulderDiff 
+            },
             codos: { status: statusByThreshold(elbowDeviation, 20, 35), value: elbowDeviation },
             munecas: { status: statusByThreshold(wristDeviation, 15, 30), value: wristDeviation }
         });

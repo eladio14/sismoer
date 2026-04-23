@@ -78,8 +78,12 @@ const MetricsPanel = ({ angles, risk, riskHistory = [], segmentStatus = {}, onPr
                     </div>
 
                     <div className="flex justify-center">
-                        <p className={`text-xs font-semibold px-3 py-1 rounded-full ${Math.abs(symmetry) < 5 ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}`}>
-                            {Math.abs(symmetry) < 5 ? 'Perfectamente Alineado' : symmetry > 0 ? 'Hombro Izq. Elevado ⚠️' : 'Hombro Der. Elevado ⚠️'}
+                        <p className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                            risk?.subScores?.isShrugging ? 'bg-rose-50 text-rose-600 border border-rose-100' :
+                            Math.abs(symmetry) < 5 ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}`}>
+                            {risk?.subScores?.isShrugging ? 'Encorvadura de hombros ⚠️' :
+                             Math.abs(symmetry) < 5 ? 'Perfectamente Alineado' : 
+                             symmetry < 0 ? 'Hombro Izq. Elevado ⚠️' : 'Hombro Der. Elevado ⚠️'}
                         </p>
                     </div>
                 </div>
